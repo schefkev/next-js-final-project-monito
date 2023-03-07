@@ -1,0 +1,94 @@
+'use client';
+
+import { gql, useMutation } from '@apollo/client';
+import Image from 'next/image';
+import Link from 'next/link';
+import { redirect, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import Logo from '../../../public/logo1.svg';
+import { getSafeReturnToPath } from '../../../utils/validation';
+
+const loginMutation = gql`
+  mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      id
+      username
+      avatar
+    }
+  }
+`;
+
+export default function LoginForm(props: { returnTo?: string | string[] }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [onError, setOnError] = useState('');
+  const router = useRouter();
+
+  const [loginHandler] = useMutation(loginMutation, {
+    variables: {
+      username,
+      password,
+    },
+
+    onError: (error) => {
+      setOnError(error.message);
+    },
+
+    onCompleted: (data) => {
+      const returnTo = getSafeReturnToPath(props.returnTo);
+      if (returnTo) {
+        router.push(returnTo);
+        return;
+      }
+      router.replace(`/profile/${data.login.id}`);
+      router.refresh();
+    },
+  });
+
+  return (
+    <div data-theme="emerald">
+      {/* Header */}
+      <header className="navbar bg-primary-focus">
+        <div className="flex-1 ml-6">
+          <Link href="/">
+            <Image src={Logo} alt="Logo" width="70" height="70" />
+          </Link>
+        </div>
+      </header>
+      {/* Registration Form */}
+      <div className="form-control">
+        <label className="input-group input-group-md">
+          <span>Name</span>
+          <input
+            placeholder="Type here"
+            className="input input-bordered input-md"
+            value={username}
+            onChange={(event) => {
+              setUsername(event.currentTarget.value);
+            }}
+          />
+        </label>
+      </div>
+      <div className="form-control">
+        <label className="input-group input-group-md">
+          <span>Password</span>
+          <input
+            placeholder="Password here"
+            className="input input-bordered input-md"
+            value={password}
+            onChange={(event) => {
+              setPassword(event.currentTarget.value);
+            }}
+          />
+        </label>
+      </div>
+      <button
+        onClick={async () => await loginHandler()}
+        className="btn btn-primary"
+      >
+        Get Started
+      </button>
+      <div className="error">{onError}</div>
+    </div>
+  );
+}
