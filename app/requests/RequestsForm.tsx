@@ -14,39 +14,27 @@ export type ApartmentResponse = {
   avatar: string;
 };
 
-const createTenant = gql`
-  mutation CreateTenant(
-    $username: String!
-    $password: String!
-    $userId: ID
-    $avatar: String!
-  ) {
-    createTenant(
-      username: $username
-      password: $password
-      userId: $userId
-      avatar: $avatar
-    ) {
+const createRequest = gql`
+  mutation CreateRequest($tenantId: ID!, $message: String!, $picture: String!) {
+    createRequest(tenantId: $tenantId, message: $message, picture: $picture) {
       id
-      username
-      avatar
+      message
+      picture
     }
   }
 `;
 
-export default function ApartmentForm(props: { userId: number }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [avatar, setAvatar] = useState('');
+export default function RequestsForm(props: { userId: number }) {
+  const [message, setMessage] = useState('');
+  const [picture, setPicture] = useState('');
   const [onError, setOnError] = useState('');
   const router = useRouter();
 
-  const [handleCreateTenant] = useMutation(createTenant, {
+  const [handleCreateRequest] = useMutation(createRequest, {
     variables: {
-      username,
-      password,
       userId: props.userId,
-      avatar,
+      message,
+      picture,
     },
     onError: (error) => {
       setOnError(error.message);
@@ -55,7 +43,6 @@ export default function ApartmentForm(props: { userId: number }) {
 
   return (
     <div data-theme="emerald">
-      {/* Header */}
       <header className="navbar bg-primary-focus">
         <div className="flex-1 ml-6">
           <Link href="/">
@@ -63,55 +50,40 @@ export default function ApartmentForm(props: { userId: number }) {
           </Link>
         </div>
       </header>
-      {/* ----- Create User Name ----- */}
+      {/* ----- CREATE THE REQUEST MESSAGE ----- */}
       <div className="flex flex-col gap-4 justify-content items-center h-screen mt-16">
         <div className="form-control">
           <label className="input-group input-group-md">
-            <span className="w-28">Name</span>
+            <span className="w-28">Message</span>
             <input
               type="text"
               placeholder="Type here"
               className="input input-bordered input-md"
-              value={username}
+              value={message}
               onChange={(event) => {
-                setUsername(event.currentTarget.value);
+                setMessage(event.currentTarget.value);
               }}
             />
           </label>
         </div>
-        {/* ----- Create User Password ----- */}
+        {/* ----- CREATE THE REQUEST PICTURE ----- */}
         <div className="form-control">
           <label className="input-group input-group-md">
-            <span className="w-28">Password</span>
-            <input
-              type="text"
-              placeholder="Password here"
-              className="input input-bordered input-md"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.currentTarget.value);
-              }}
-            />
-          </label>
-        </div>
-        {/* ----- Create User Avatar ----- */}
-        <div className="form-control">
-          <label className="input-group input-group-md">
-            <span className="w-28">Avatar</span>
+            <span className="w-28">Picture</span>
             <input
               type="text"
               placeholder="Upload Avatar here"
               className="input input-bordered input-md"
-              value={avatar}
+              value={picture}
               onChange={(event) => {
-                setAvatar(event.currentTarget.value);
+                setPicture(event.currentTarget.value);
               }}
             />
           </label>
         </div>
         {/* ----- Add Button ----- */}
         <button
-          onClick={async () => await handleCreateTenant()}
+          onClick={async () => await handleCreateRequest()}
           className="btn btn-primary"
         >
           Get Started

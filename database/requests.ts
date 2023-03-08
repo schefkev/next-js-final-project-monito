@@ -3,10 +3,9 @@ import { sql } from './connect';
 
 export type Request = {
   id: number;
-  title: string;
+  tenant_id: number;
   message: string;
-  tenants_id: number;
-  landlords_id: number;
+  picture: string;
 };
 
 // Get all users
@@ -16,3 +15,22 @@ export const getRequests = cache(async () => {
   `;
   return requests;
 });
+
+/* ----- CREATE NEW REQUEST ----- */
+export const createRequest = cache(
+  async (tenantId: number, message: string, picture: string) => {
+    const [request] = await sql<
+      { id: number; tenant_id: number; message: string; picture: string }[]
+    >`
+    INSERT INTO requests
+      (tenant_id, message, picture)
+    VALUES
+      (${tenantId}, ${message}, ${picture})
+    RETURNING
+      id,
+      message,
+      picture
+    `;
+    return request;
+  },
+);

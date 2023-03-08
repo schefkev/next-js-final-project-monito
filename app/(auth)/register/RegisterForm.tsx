@@ -49,7 +49,7 @@ export default function RegistrationForm(props: {
         router.push(returnTo);
         return;
       }
-      router.replace(`/profile/${data.createUser.id}`);
+      router.replace(`/login`);
       router.refresh();
     },
   });
@@ -114,7 +114,7 @@ export default function RegistrationForm(props: {
           onClick={async () => await handleCreateUser()}
           className="btn btn-primary"
         >
-          Get Started
+          Sign Up
         </button>
         <div className="error">{onError}</div>
       </div>

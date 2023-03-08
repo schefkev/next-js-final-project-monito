@@ -77,3 +77,16 @@ export const getApartmentsByUserId = cache(async () => {
   `;
   return apartment;
 });
+
+/* ----- GET THE APARTMENT WITH THE USER-ID ----- */
+export const getApartmentByUserId = cache(async (userId: number) => {
+  const [userApartment] = await sql<Apartment[]>`
+    SELECT
+      *
+    FROM
+      apartments
+    WHERE
+      user_id = ${userId}
+  `;
+  return [userApartment];
+});

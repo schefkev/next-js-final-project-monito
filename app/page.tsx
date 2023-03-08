@@ -42,6 +42,7 @@ export default async function HomePage() {
             <Image src={Logo} alt="Logo" width="90" height="70" />
           </div>
           <div className="items-center">
+            <span className="mr-4">{data.getLoggedInUser?.username}</span>
             {data.getLoggedInUser?.username ? (
               <Link
                 className="flex-none mr-6 text-success"

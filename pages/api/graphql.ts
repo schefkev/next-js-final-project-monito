@@ -5,8 +5,14 @@ import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql';
-import { createApartment, getApartments } from '../../database/apartments';
+import {
+  createApartment,
+  getApartmentByUserId,
+  getApartments,
+} from '../../database/apartments';
 import { createSession } from '../../database/sessions';
+import { createTenant, getTenantsByUsername } from '../../database/tenants';
+import { createTenantSession } from '../../database/tenantSessions';
 import {
   createUser,
   getUserById,
@@ -14,20 +20,27 @@ import {
   getUserByUsername,
   getUserByUsernameWithPasswordHash,
   getUsers,
-  isUserAdminBySessionToken,
 } from '../../database/users';
 import { createSerializedRegisterSessionTokenCookie } from '../../utils/cookies';
 import { createCsrfSecret } from '../../utils/csrf';
 
-console.log('Hello');
-
 type Args = {
   id: string;
+};
+type ArgsId = {
+  userId: number;
 };
 type UserInput = {
   id: string;
   username: string;
   password: string;
+  avatar: string;
+};
+type TenantInput = {
+  id: string;
+  username: string;
+  password: string;
+  userId: number;
   avatar: string;
 };
 type LoginArgument = {
@@ -39,6 +52,10 @@ type UserAuthenticationContext = {
   res: {
     setHeader: (setCookie: string, cookieValue: string) => void;
   };
+};
+type AuthenicationContext = {
+  isLoggedIn: boolean;
+  reg: { cookies: { sessionToken: string } };
 };
 
 type ApartmentInput = {
@@ -60,12 +77,13 @@ const typeDefs = gql`
     username: String
     password: String
     avatar: String
-    apartments: [Apartment!]
+    apartments: [Apartment]
   }
 
   type Apartment {
     id: ID!
-    user: User!
+    ## user: [User]
+    ## user: User!
     name: String!
     address: String!
     city: String!
@@ -76,15 +94,30 @@ const typeDefs = gql`
     image: String!
   }
 
+  type Tenant {
+    id: ID!
+    username: String
+    password: String
+    user: User!
+    avatar: String
+  }
   type Query {
     users: [User]
     user(id: ID!): User
     getLoggedInUser(username: String): User
+    getLoggedInTenant(username: String): Tenant
     apartments: [Apartment]
+    apartmentByUserId(userId: Int!): [Apartment]
   }
 
   type Mutation {
     createUser(username: String!, password: String!, avatar: String): User
+    createTenant(
+      username: String!
+      password: String!
+      userId: ID
+      avatar: String
+    ): Tenant
     login(username: String!, password: String!): User
     createApartment(
       userId: ID
@@ -108,8 +141,18 @@ const resolvers = {
     getLoggedInUser: async (parent: string, args: { username: string }) => {
       return await getUserBySessionToken(args.username);
     },
-    user: async (parent: string, args: Args) => {
-      return getUserById(parseInt(args.id));
+    user: async (
+      parent: string,
+      args: Args /* context: AuthenicationContext */,
+    ) => {
+      /* if (!context.isLoggedIn) {
+        throw new GraphQLError('You must be logged');
+      } */
+      return await getUserById(parseInt(args.id));
+    },
+    apartmentByUserId: async (parent: string, args: ArgsId) => {
+      // const { userId } = args.userId;
+      return await getApartmentByUserId(args.userId);
     },
     apartments: async () => {
       return await getApartments();
@@ -162,9 +205,53 @@ const resolvers = {
       /* ----- Return the new User ----- */
       return newUser;
     },
-
+    createTenant: async (
+      parent: string,
+      args: TenantInput,
+      context: UserAuthenticationContext,
+    ) => {
+      /* ----- Checking if the input field is empty ----- */
+      if (
+        !args.username ||
+        !args.password ||
+        typeof args.username !== 'string' ||
+        typeof args.password !== 'string'
+      ) {
+        throw new GraphQLError('Required field is missing');
+      }
+      /* ----- Comparing with the database if the username already exist ----- */
+      const user = await getTenantsByUsername(args.username);
+      if (user) {
+        throw new GraphQLError('User already exists');
+      }
+      /* ----- Create the password hash ----- */
+      const passwordHash = await bcrypt.hash(args.password, 12);
+      /* ----- Create the user with the password hash ----- */
+      const newUser = await createTenant(
+        args.username,
+        passwordHash,
+        args.userId,
+        args.avatar,
+      );
+      if (!newUser) {
+        throw new GraphQLError('User creation failed');
+      }
+      /* ----- Create the token ----- */
+      const token = crypto.randomBytes(80).toString('base64');
+      const csrfSecret = createCsrfSecret();
+      /* ----- Create the session ----- */
+      const session = await createTenantSession(token, newUser.id, csrfSecret);
+      if (!session) {
+        throw new GraphQLError('The creation of the session has failed');
+      }
+      const serializedCookie = createSerializedRegisterSessionTokenCookie(
+        session.token,
+      );
+      context.res.setHeader('Set-Cookie', serializedCookie);
+      /* ----- Return the new User ----- */
+      return newUser;
+    },
     createApartment: async (parent: string, args: ApartmentInput) => {
-      console.log('args:', args);
       return await createApartment(
         args.userId,
         args.name,
@@ -248,11 +335,8 @@ const server = new ApolloServer({
 
 export default startServerAndCreateNextHandler(server, {
   context: async (req, res) => {
-    /* const hashedPassword = await hashPassword(password); */
-    // FIXME: Implement secure authentication
-    const isAdmin = await isUserAdminBySessionToken(
-      req.cookies.fakeSessionToken!,
-    );
-    return { req, res, isAdmin };
+    const user = await getUserBySessionToken(req.cookies.sessionToken!);
+    const isLoggedIn = user ? true : false;
+    return { req, res, isLoggedIn };
   },
 });

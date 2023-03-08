@@ -56,39 +56,41 @@ export default function LoginForm(props: { returnTo?: string | string[] }) {
         </div>
       </header>
       {/* Registration Form */}
-      <div className="form-control">
-        <label className="input-group input-group-md">
-          <span>Name</span>
-          <input
-            placeholder="Type here"
-            className="input input-bordered input-md"
-            value={username}
-            onChange={(event) => {
-              setUsername(event.currentTarget.value);
-            }}
-          />
-        </label>
+      <div className="flex flex-col gap-4 justify-content items-center h-screen mt-16">
+        <div className="form-control">
+          <label className="input-group input-group-md">
+            <span className="w-28">Name</span>
+            <input
+              placeholder="Type here"
+              className="input input-bordered input-md"
+              value={username}
+              onChange={(event) => {
+                setUsername(event.currentTarget.value);
+              }}
+            />
+          </label>
+        </div>
+        <div className="form-control">
+          <label className="input-group input-group-md">
+            <span className="w-28">Password</span>
+            <input
+              placeholder="Password here"
+              className="input input-bordered input-md"
+              value={password}
+              onChange={(event) => {
+                setPassword(event.currentTarget.value);
+              }}
+            />
+          </label>
+        </div>
+        <button
+          onClick={async () => await loginHandler()}
+          className="btn btn-primary"
+        >
+          Login
+        </button>
+        <div className="error">{onError}</div>
       </div>
-      <div className="form-control">
-        <label className="input-group input-group-md">
-          <span>Password</span>
-          <input
-            placeholder="Password here"
-            className="input input-bordered input-md"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.currentTarget.value);
-            }}
-          />
-        </label>
-      </div>
-      <button
-        onClick={async () => await loginHandler()}
-        className="btn btn-primary"
-      >
-        Get Started
-      </button>
-      <div className="error">{onError}</div>
     </div>
   );
 }

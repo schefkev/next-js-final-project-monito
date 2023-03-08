@@ -8,6 +8,7 @@ export type User = {
   avatar: string;
 };
 
+/* ----- GET THE USER BY THE SESSION TOKEN */
 export const getUserBySessionToken = cache(async (token: string) => {
   const [user] = await sql<
     { id: number; username: string; csrfSecret: string }[]
@@ -28,6 +29,7 @@ export const getUserBySessionToken = cache(async (token: string) => {
   return user;
 });
 
+/* ----- GET THE USER BY THE HASHED PASSWORD ----- */
 export const getUserByUsernameWithPasswordHash = cache(
   async (username: string) => {
     const [user] = await sql<User[]>`
@@ -42,6 +44,7 @@ export const getUserByUsernameWithPasswordHash = cache(
   },
 );
 
+/* ----- GET THE USER BY ITS USERNAME ----- */
 export const getUserByUsername = cache(async (username: string) => {
   const [user] = await sql<{ id: number; username: string }[]>`
   SELECT
@@ -55,6 +58,7 @@ export const getUserByUsername = cache(async (username: string) => {
   return user;
 });
 
+/* ----- CREATE A NEW USER ----- */
 export const createUser = cache(
   async (username: string, password: string, avatar: string) => {
     const [user] = await sql<
@@ -73,7 +77,7 @@ export const createUser = cache(
   },
 );
 
-// get all the users
+/* ----- GET ALL THE USERS ----- */
 export const getUsers = cache(async () => {
   const users = await sql<User[]>`
     SELECT * FROM users
@@ -81,7 +85,7 @@ export const getUsers = cache(async () => {
   return users;
 });
 
-// get users by its id
+/* ----- GET USER BY ITS ID ----- */
 export const getUserById = cache(async (id: number) => {
   if (Number.isNaN(id)) {
     return undefined;
@@ -96,10 +100,3 @@ export const getUserById = cache(async (id: number) => {
   `;
   return user;
 });
-
-// FIX THIS SECTION ACCORDINGLY
-export async function isUserAdminBySessionToken(sessionToken: string) {
-  // FIXME: Implement proper authorization
-  console.log(sessionToken);
-  return await true;
-}
