@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import Logo from '../../public/logo1.svg';
+import Logo from '../../../public/logo1.svg';
 
 export type ApartmentResponse = {
   id: number;
@@ -34,7 +34,7 @@ const createTenant = gql`
   }
 `;
 
-export default function ApartmentForm(props: { userId: number }) {
+export default function CreateTenantForm(props: { userId: number }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [avatar, setAvatar] = useState('');

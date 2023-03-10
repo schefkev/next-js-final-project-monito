@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import Logo from '../../../../public/logo1.svg';
+import Logo from '../../../public/logo1.svg';
 
 export type ApartmentResponse = {
   id: number;
@@ -62,7 +62,7 @@ export default function ApartmentForm(props: { userId: number }) {
   const [onError, setOnError] = useState('');
   const router = useRouter();
 
-  const [handleCreateUser] = useMutation(createApartment, {
+  const [handleCreateApartment] = useMutation(createApartment, {
     variables: {
       userId: props.userId,
       name,
@@ -212,7 +212,7 @@ export default function ApartmentForm(props: { userId: number }) {
         </div>
         {/* ----- Add Button ----- */}
         <button
-          onClick={async () => await handleCreateUser()}
+          onClick={async () => await handleCreateApartment()}
           className="btn btn-primary"
         >
           Get Started

@@ -11,7 +11,11 @@ import {
   getApartments,
 } from '../../database/apartments';
 import { createSession } from '../../database/sessions';
-import { createTenant, getTenantsByUsername } from '../../database/tenants';
+import {
+  createTenant,
+  getTenantByUserId,
+  getTenantsByUsername,
+} from '../../database/tenants';
 import { createTenantSession } from '../../database/tenantSessions';
 import {
   createUser,
@@ -28,7 +32,8 @@ type Args = {
   id: string;
 };
 type ArgsId = {
-  userId: number;
+  // userId: number;
+  userId: string;
 };
 type UserInput = {
   id: string;
@@ -78,6 +83,7 @@ const typeDefs = gql`
     password: String
     avatar: String
     apartments: [Apartment]
+    tenants: [Tenant]
   }
 
   type Apartment {
@@ -106,8 +112,11 @@ const typeDefs = gql`
     user(id: ID!): User
     getLoggedInUser(username: String): User
     getLoggedInTenant(username: String): Tenant
-    apartments: [Apartment]
-    apartmentByUserId(userId: Int!): [Apartment]
+    # apartments: [Apartment]
+    # apartmentByUserId(userId: Int!): [Apartment]
+    apartments(userId: ID!): [Apartment]
+    apartmentByUserId(userId: String): [Apartment]
+    tenantByUserId(userId: String): [Tenant]
   }
 
   type Mutation {
@@ -141,22 +150,18 @@ const resolvers = {
     getLoggedInUser: async (parent: string, args: { username: string }) => {
       return await getUserBySessionToken(args.username);
     },
-    user: async (
-      parent: string,
-      args: Args /* context: AuthenicationContext */,
-    ) => {
-      /* if (!context.isLoggedIn) {
-        throw new GraphQLError('You must be logged');
-      } */
+    user: async (parent: string, args: Args) => {
       return await getUserById(parseInt(args.id));
     },
     apartmentByUserId: async (parent: string, args: ArgsId) => {
-      // const { userId } = args.userId;
-      return await getApartmentByUserId(args.userId);
+      return await getApartmentByUserId(parseInt(args.userId));
     },
-    apartments: async () => {
+    tenantByUserId: async (parent: string, args: ArgsId) => {
+      return await getTenantByUserId(parseInt(args.userId));
+    },
+    /* apartments: async () => {
       return await getApartments();
-    },
+    }, */
   },
 
   Mutation: {
@@ -327,11 +332,6 @@ export const schema = makeExecutableSchema({
 const server = new ApolloServer({
   schema,
 });
-
-/* ----- CONTEXT: ----- */
-/* Here i am adding the hashPassword function to the context
-  object that is passed to each resolver function. This will make the
-  hashPassword function available in the resolver functions.  */
 
 export default startServerAndCreateNextHandler(server, {
   context: async (req, res) => {

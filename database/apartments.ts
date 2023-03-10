@@ -13,7 +13,7 @@ export type Apartment = {
   image: string;
 };
 
-// Get all apartments
+/* ----- GET ALL THE APARTMENTS ----- */
 export const getApartments = cache(async () => {
   const apartments = await sql<Apartment[]>`
     SELECT * FROM apartments
@@ -21,7 +21,7 @@ export const getApartments = cache(async () => {
   return apartments;
 });
 
-// create new apartment
+/* ----- CREATE A NEW APARTMENT ----- */
 export const createApartment = cache(
   async (
     userId: number,
@@ -67,20 +67,9 @@ export const createApartment = cache(
   },
 );
 
-export const getApartmentsByUserId = cache(async () => {
-  const apartment = await sql<Apartment[]>`
-    SELECT
-      users.*, apartments.*
-    FROM users
-    JOIN apartments
-    ON users.id = apartments.user_id
-  `;
-  return apartment;
-});
-
 /* ----- GET THE APARTMENT WITH THE USER-ID ----- */
 export const getApartmentByUserId = cache(async (userId: number) => {
-  const [userApartment] = await sql<Apartment[]>`
+  const userApartment = await sql<Apartment[]>`
     SELECT
       *
     FROM
@@ -88,5 +77,5 @@ export const getApartmentByUserId = cache(async (userId: number) => {
     WHERE
       user_id = ${userId}
   `;
-  return [userApartment];
+  return userApartment;
 });

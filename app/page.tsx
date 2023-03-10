@@ -12,6 +12,8 @@ import LoginButton from './LoginButton';
 import LogoutButton from './LogoutButton';
 import RegisterButton from './RegisterButton';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const client = initializeApollo(null);
   const nextCookies = cookies();
@@ -21,6 +23,7 @@ export default async function HomePage() {
     query: gql`
       query GetLoggedInUser($username: String) {
         getLoggedInUser(username: $username) {
+          id
           username
           avatar
         }
@@ -30,7 +33,7 @@ export default async function HomePage() {
       username: sessionToken?.value,
     },
   });
-
+  // console.log(data);
   return (
     <div>
       <main
@@ -42,7 +45,9 @@ export default async function HomePage() {
             <Image src={Logo} alt="Logo" width="90" height="70" />
           </div>
           <div className="items-center">
-            <span className="mr-4">{data.getLoggedInUser?.username}</span>
+            <Link href={`/profile/${data.getLoggedInUser?.id}`}>
+              <span className="mr-4">{data.getLoggedInUser?.username}</span>
+            </Link>
             {data.getLoggedInUser?.username ? (
               <Link
                 className="flex-none mr-6 text-success"

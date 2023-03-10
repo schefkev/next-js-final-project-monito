@@ -1,12 +1,12 @@
 import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
-import { initializeApollo } from '../../utils/graphql';
-import ApolloClientProvider from '../ApolloClientProvider';
-import Tenants from './Tenants';
+import { initializeApollo } from '../../../utils/graphql';
+import ApolloClientProvider from '../../ApolloClientProvider';
+import ApartmentForm from './ApartmentForm';
 
 export const dynamic = 'force-dynamic';
 
-export default async function TenantsPage() {
+export default async function CreateApartmentPage() {
   const client = initializeApollo(null);
   const nextCookies = cookies();
   const sessionToken = nextCookies.get('sessionToken');
@@ -23,13 +23,11 @@ export default async function TenantsPage() {
       username: sessionToken?.value,
     },
   });
-  // console.log(data);
+  // console.log('data:', data.getLoggedInUser.id);
 
   return (
-    <ApolloClientProvider
-      initialApolloState={JSON.stringify(client.cache.extract())}
-    >
-      <Tenants userId={data.getLoggedInUser.id} />
+    <ApolloClientProvider initialApolloState={JSON.stringify([])}>
+      <ApartmentForm userId={data.getLoggedInUser.id} />
     </ApolloClientProvider>
   );
 }

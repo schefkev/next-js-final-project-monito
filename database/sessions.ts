@@ -7,6 +7,8 @@ type Session = {
   csrfSecret: string;
 };
 
+/* ----- CREATE A NEW SESSION ----- */
+
 export const createSession = cache(
   async (token: string, userId: number, csrfSecret: string) => {
     const [session] = await sql<{ id: number; token: string }[]>`
@@ -23,6 +25,8 @@ export const createSession = cache(
   },
 );
 
+/* ----- DELETE THE SESSION IF EXPIRED ----- */
+
 export const deleteExpiredSessions = cache(async () => {
   await sql`
     DELETE FROM
@@ -31,6 +35,8 @@ export const deleteExpiredSessions = cache(async () => {
       expiry_timestamp < now()
   `;
 });
+
+/* ----- DELETE THE SESSION BY ITS TOKEN ----- */
 
 export const deleteSessionByToken = cache(async (token: string) => {
   const [session] = await sql<{ id: number; token: string }[]>`
@@ -44,6 +50,8 @@ export const deleteSessionByToken = cache(async (token: string) => {
   `;
   return session;
 });
+
+/* ----- GET THE VALIDATED SESSION BY ITS TOKEN ----- */
 
 export const getValidSessionByToken = cache(async (token: string) => {
   const [session] = await sql<Session[]>`
