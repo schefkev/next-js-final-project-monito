@@ -6,10 +6,7 @@ import Twitter from '../public/twitter.svg';
 
 export default function Footer() {
   return (
-    <footer
-      data-theme="emerald"
-      className="footer items-center p-2 bg-primary-focus text-accent-content"
-    >
+    <footer className="footer items-center p-2 bg-secondary text-base-100">
       <div className="items-center grid-flow-col">
         <Image src={Logo} alt="Monito Logo" width="42" height="42" />
         <p>Copyright © 2023 - All right reserved</p>

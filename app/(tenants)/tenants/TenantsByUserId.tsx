@@ -29,7 +29,7 @@ export default function TenantsPage(props: { userId: number }) {
   console.log('user:', props.userId);
 
   return (
-    <div data-theme="emerald" className="h-screen">
+    <div className="">
       {data?.tenantByUserId.length === 0 ? (
         <div className="flex flex-col gap-4 justify-center items-center mt-24">
           <div className="p-6 rounded-lg shadow-lg">
@@ -37,7 +37,7 @@ export default function TenantsPage(props: { userId: number }) {
               You have no tenants in your Dashboard, want to add your first one?
             </h3>
             <div className="text-center hover:text-primary-focus">
-              <Link href="/createApartments">Create Tenants</Link>
+              <Link href="/createTenants">Create Tenants</Link>
             </div>
           </div>
         </div>
@@ -45,15 +45,19 @@ export default function TenantsPage(props: { userId: number }) {
         <div>
           {data?.tenantByUserId.map((tenant: Tenant) => {
             return (
-              <div key={`apartment-${tenant.id}`}>
-                <div className="card lg:card-side bg-base-100 shadow-xl">
-                  <Image
-                    src={tenant.avatar}
-                    alt="Apartment Name"
-                    width="300"
-                    height="300"
-                    className="object-cover"
-                  />
+              <div key={`tenant-${tenant.id}`}>
+                <div className="card lg:card-side bg-base-100 shadow-xl m-8">
+                  <div className="avatar">
+                    <div className="w-16 rounded">
+                      <Image
+                        src={tenant.avatar}
+                        alt="Tenant Name"
+                        width="150"
+                        height="150"
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
                   <div className="card-body">
                     <h2 className="card-title text-primary underline decoration-primary-500/25">
                       {tenant.username}

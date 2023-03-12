@@ -13,6 +13,30 @@ module.exports = {
   },
   plugins: [require('daisyui')],
   daisyui: {
-    themes: ['emerald'],
+    themes: [
+      {
+        mytheme: {
+          primary: '#19555E',
+
+          secondary: '#07132F',
+
+          accent: '#CF9B5E',
+
+          neutral: '#DFE0DF',
+
+          'base-100': '#FFF7EB',
+
+          info: '#FFEBCC',
+
+          success: '#96682D',
+
+          warning: '#FBBD23',
+
+          error: '#E7BA85',
+
+          noice: '#07132F',
+        },
+      },
+    ],
   },
 };

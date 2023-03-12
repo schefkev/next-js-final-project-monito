@@ -80,7 +80,7 @@ export default function ApartmentForm(props: { userId: number }) {
   });
 
   return (
-    <div data-theme="emerald">
+    <div>
       {/* Header */}
       <header className="navbar bg-primary-focus">
         <div className="flex-1 ml-6">

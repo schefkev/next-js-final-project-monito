@@ -13,6 +13,19 @@ export type Apartment = {
   image: string;
 };
 
+/* ----- GET THE APARTMENT BY ITS ID ----- */
+export const getApartmentById = cache(async (id: number) => {
+  const [apartment] = await sql<Apartment[]>`
+    SELECT
+      *
+    FROM
+      apartments
+    WHERE
+      id = ${id}
+  `;
+  return apartment;
+});
+
 /* ----- GET ALL THE APARTMENTS ----- */
 export const getApartments = cache(async () => {
   const apartments = await sql<Apartment[]>`

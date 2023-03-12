@@ -35,22 +35,16 @@ export default async function HomePage() {
   });
   // console.log(data);
   return (
-    <div>
-      <main
-        data-theme="emerald"
-        className="bg-[url('/images/Background.png')] bg-cover"
-      >
-        <div className="flex flex-row justify-between flex-1 ml-6">
-          <div className="justify-start">
+    <div data-theme="mytheme">
+      <main className="bg-[url('/images/Background.jpg')] bg-cover">
+        <div className="flex flex-row justify-between flex-1 mx-12">
+          <div className="items-center">
             <Image src={Logo} alt="Logo" width="90" height="70" />
           </div>
-          <div className="items-center">
-            <Link href={`/profile/${data.getLoggedInUser?.id}`}>
-              <span className="mr-4">{data.getLoggedInUser?.username}</span>
-            </Link>
+          <div className="justify-start mt-4 text-info">
             {data.getLoggedInUser?.username ? (
               <Link
-                className="flex-none mr-6 text-success"
+                className="flex-none mr-6 text-info"
                 href="/logout"
                 prefetch={false}
               >
@@ -61,19 +55,22 @@ export default async function HomePage() {
                 <LoginButton />
               </Link>
             )}
+            <Link href={`/profile/${data.getLoggedInUser?.id}`}>
+              <span className="mr-4">{data.getLoggedInUser?.username}</span>
+            </Link>
           </div>
         </div>
         {/* ----- Hero Section ----- */}
-        <div className="flex flex-col gap-6 text-center justify-center items-center h-screen">
-          <p className="text-4xl text-success font-mono tracking-widest">
+        <div className="flex flex-col gap-6 text-center justify-center items-center ">
+          <p className="text-4xl text-accent font-mono tracking-widest mt-12">
             Welcome to Monito
           </p>
-          <p className="text-xl tracking-wide">
+          <p className="text-xl text-info tracking-wide mt-12">
             The Ultimate property management solution
           </p>
-          <hr className="w-36 h-1 bg-neutral-500 rounded" />
+          <hr className="w-36 h-1 bg-error rounded mt-6" />
           <div className="flex flex-col my-12">
-            <div className="grid h-20 card rounded-box placed-items-center max-w-4xl text-l tracking-wide text-neutral">
+            <div className="grid h-20 card rounded-box placed-items-center max-w-4xl text-l tracking-wide text-info">
               Our app is designed to simplify the way landlords communicate with
               their tenants and manage their properties. With Monito, you can
               easily handle all aspects of property management from the comfort
@@ -82,8 +79,8 @@ export default async function HomePage() {
           </div>
         </div>
         {/* ----- Card Section ----- */}
-        <div className="grid grid-cols-1 gap-4 mx-12 md:grid-cols-2">
-          <div className="card lg:card-side bg-base-100 shadow-xl">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-16 mx-12 mt-12 md:grid-cols-2">
+          <div className="card lg:card-side bg-info shadow-xl">
             <Image
               src={Dashboard}
               alt="Dashboard"
@@ -92,7 +89,7 @@ export default async function HomePage() {
               className="object-cover"
             />
             <div className="card-body">
-              <h2 className="card-title text-primary underline decoration-primary-500/25">
+              <h2 className="card-title text-success underline decoration-primary-500/25">
                 Dashboard
               </h2>
               <p className="text-sm">
@@ -104,7 +101,7 @@ export default async function HomePage() {
               </p>
             </div>
           </div>
-          <div className="card lg:card-side bg-base-100 shadow-xl">
+          <div className="card lg:card-side bg-info shadow-xl">
             <Image
               src={Maintenance}
               alt="Dashboard"
@@ -113,7 +110,7 @@ export default async function HomePage() {
               className="object-cover"
             />
             <div className="card-body">
-              <h2 className="card-title text-primary underline decoration-primary-500/25">
+              <h2 className="card-title text-success underline decoration-primary-500/25">
                 Maintenance
               </h2>
               <p className="text-sm">
@@ -125,7 +122,7 @@ export default async function HomePage() {
               </p>
             </div>
           </div>
-          <div className="card lg:card-side bg-base-100 shadow-xl">
+          <div className="card lg:card-side bg-info shadow-xl">
             <Image
               src={Service}
               alt="Dashboard"
@@ -134,7 +131,7 @@ export default async function HomePage() {
               className="object-cover"
             />
             <div className="card-body">
-              <h2 className="card-title text-primary underline decoration-primary-500/25">
+              <h2 className="card-title text-success underline decoration-primary-500/25">
                 Mobile Access
               </h2>
               <p className="text-sm">
@@ -144,7 +141,7 @@ export default async function HomePage() {
               </p>
             </div>
           </div>
-          <div className="card lg:card-side bg-base-100 shadow-xl">
+          <div className="card lg:card-side bg-info shadow-xl">
             <Image
               src={Overview}
               alt="Dashboard"
@@ -153,7 +150,7 @@ export default async function HomePage() {
               className="object-cover"
             />
             <div className="card-body">
-              <h2 className="card-title text-primary underline decoration-primary-500/25">
+              <h2 className="card-title text-success underline decoration-primary-500/25">
                 Overview
               </h2>
               <p className="text-sm">
@@ -167,14 +164,14 @@ export default async function HomePage() {
         </div>
         {/* ----- Conclusion Section ------ */}
         <div className="flex flex-col justify-center items-center mt-12 lg:px-8">
-          <div className="grid h-20 card rounded-box placed-items-center max-w-4xl text-l tracking-wide text-neutral">
+          <div className="grid h-20 card rounded-box placed-items-center max-w-4xl text-l tracking-wide text-info">
             With Monito, you'll save time and effort, reduce your workload, and
             improve tenant satisfaction. It's the ultimate property management
             solution that will take your business to the next level. So why
             wait? Sign up today and start experiencing the benefits for
             yourself!
           </div>
-          <div className="grid h-20 card rounded-box placed-items-center my-16 max-w-4xl text-l tracking-wide text-neutral">
+          <div className="grid h-20 card rounded-box placed-items-center my-16 max-w-4xl text-l tracking-wide text-info">
             Our app is designed with security in mind, with robust
             authentication and access controls that ensure only authorized users
             have access to sensitive data. And with our user-friendly interface,

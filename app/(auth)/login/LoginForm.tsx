@@ -3,7 +3,7 @@
 import { gql, useMutation } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Logo from '../../../public/logo1.svg';
 import { getSafeReturnToPath } from '../../../utils/validation';
@@ -46,7 +46,7 @@ export default function LoginForm(props: { returnTo?: string | string[] }) {
   });
 
   return (
-    <div data-theme="emerald">
+    <div>
       {/* Header */}
       <header className="navbar bg-primary-focus">
         <div className="flex-1 ml-6">

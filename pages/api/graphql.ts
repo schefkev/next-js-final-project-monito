@@ -7,8 +7,8 @@ import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql';
 import {
   createApartment,
+  getApartmentById,
   getApartmentByUserId,
-  getApartments,
 } from '../../database/apartments';
 import { createSession } from '../../database/sessions';
 import {
@@ -35,6 +35,7 @@ type ArgsId = {
   // userId: number;
   userId: string;
 };
+
 type UserInput = {
   id: string;
   username: string;
@@ -58,10 +59,10 @@ type UserAuthenticationContext = {
     setHeader: (setCookie: string, cookieValue: string) => void;
   };
 };
-type AuthenicationContext = {
+/* type AuthenicationContext = {
   isLoggedIn: boolean;
   reg: { cookies: { sessionToken: string } };
-};
+}; */
 
 type ApartmentInput = {
   id: string;
@@ -114,7 +115,7 @@ const typeDefs = gql`
     getLoggedInTenant(username: String): Tenant
     # apartments: [Apartment]
     # apartmentByUserId(userId: Int!): [Apartment]
-    apartments(userId: ID!): [Apartment]
+    apartments(id: ID!): Apartment
     apartmentByUserId(userId: String): [Apartment]
     tenantByUserId(userId: String): [Tenant]
   }
@@ -150,6 +151,23 @@ const resolvers = {
     getLoggedInUser: async (parent: string, args: { username: string }) => {
       return await getUserBySessionToken(args.username);
     },
+
+    /* getLoggedInUser: async (
+      parent: string,
+      args: GetLoogedInUserArgs,
+      context: AuthenicationContext,
+    ): Promise<TokenUser> => {
+      if (!context.isLoggedIn) {
+        throw new GraphQLError('User is not logged in');
+      }
+      const sessionToken = context.reg.cookies.sessionToken;
+      const user = await getUserBySessionToken(sessionToken);
+
+      if (!user) {
+        throw new GraphQLError('User not found');
+      }
+      return user;
+    }, */
     user: async (parent: string, args: Args) => {
       return await getUserById(parseInt(args.id));
     },
@@ -159,9 +177,9 @@ const resolvers = {
     tenantByUserId: async (parent: string, args: ArgsId) => {
       return await getTenantByUserId(parseInt(args.userId));
     },
-    /* apartments: async () => {
-      return await getApartments();
-    }, */
+    apartments: async (parent: string, args: Args) => {
+      return await getApartmentById(parseInt(args.id));
+    },
   },
 
   Mutation: {
