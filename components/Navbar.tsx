@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import Image from 'next/image';
 import Link from 'next/link';
 import LogoutButton from '../app/LogoutButton';
@@ -21,13 +22,30 @@ export default function NavBar(props: Props) {
         </h1>
       </div>
       <div className="flex-none gap-2">
-        <Link className="flex-none mr-6 text-success" href="/logout">
-          <LogoutButton />
-        </Link>
-        <div className="avatar">
-          <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-            <Image src={avatar} alt={username} width={200} height={200} />
+        <div className="dropdown dropdown-hover dropdown-end">
+          <div tabIndex={0}>
+            <div className="avatar">
+              <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                <Image src={avatar} alt={username} width={200} height={200} />
+              </div>
+            </div>
           </div>
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            <li>
+              <Link href="/createApartments">Create Apartment</Link>
+            </li>
+            <li>
+              <Link href="/createTenants">Create Tenant</Link>
+            </li>
+            <li>
+              <Link className="flex-none mr-6 text-success" href="/logout">
+                <LogoutButton />
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

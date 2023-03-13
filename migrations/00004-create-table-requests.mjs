@@ -4,12 +4,11 @@ export async function up(sql) {
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     tenant_id integer REFERENCES tenants(id) ON DELETE CASCADE,
     message text,
-    picture text
+    picture text,
+    created_at timestamp NOT NULL DEFAULT NOW()
   )`;
 }
 
 export async function down(sql) {
-  await sql`
-  DROP TABLE requests
-  `;
+  await sql`DROP TABLE requests`;
 }

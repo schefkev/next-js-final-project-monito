@@ -89,6 +89,9 @@ export default function LoginForm(props: { returnTo?: string | string[] }) {
         >
           Login
         </button>
+        <div>
+          <Link href="/tenantLogin">Login as Tenant?</Link>
+        </div>
         <div className="error">{onError}</div>
       </div>
     </div>

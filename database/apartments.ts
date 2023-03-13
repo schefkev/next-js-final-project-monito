@@ -8,7 +8,7 @@ export type Apartment = {
   city: string;
   unit: string;
   zip: string;
-  rent: string;
+  rent: number;
   occupied: boolean;
   image: string;
 };
@@ -34,6 +34,24 @@ export const getApartments = cache(async () => {
   return apartments;
 });
 
+/* ----- GET APARTMENTS WITH TENANTS (JOIN) ----- */
+/* export const getApartmentByUserId = cache(async (userId: number) => {
+  const results = await sql<Apartment[]>`
+    SELECT
+      apartments.*,
+      tenants.username AS tenant_username
+    FROM
+      apartments
+    INNER JOIN
+      tenants
+    ON
+      apartments.tenant_id = tenants.id
+    WHERE
+      apartments.user_id = ${userId}
+  `;
+  return results;
+}); */
+
 /* ----- CREATE A NEW APARTMENT ----- */
 export const createApartment = cache(
   async (
@@ -43,7 +61,7 @@ export const createApartment = cache(
     city: string,
     unit: string,
     zip: string,
-    rent: string,
+    rent: number,
     occupied: boolean,
     image: string,
   ) => {
@@ -56,7 +74,7 @@ export const createApartment = cache(
         city: string;
         unit: string;
         zip: string;
-        rent: string;
+        rent: number;
         occupied: boolean;
         image: string;
       }[]

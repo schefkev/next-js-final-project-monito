@@ -9,14 +9,22 @@ import {
   createApartment,
   getApartmentById,
   getApartmentByUserId,
+  getApartments,
 } from '../../database/apartments';
-import { createSession } from '../../database/sessions';
+import { createSession, deleteSessionByToken } from '../../database/sessions';
 import {
   createTenant,
+  getTenantBySessionToken,
   getTenantByUserId,
+  getTenantByUsernameWithPasswordHash,
+  getTenantsById,
   getTenantsByUsername,
+  getTenantsWithApartments,
 } from '../../database/tenants';
-import { createTenantSession } from '../../database/tenantSessions';
+import {
+  createTenantSession,
+  deleteTenantSessionByToken,
+} from '../../database/tenantSessions';
 import {
   createUser,
   getUserById,
@@ -24,6 +32,7 @@ import {
   getUserByUsername,
   getUserByUsernameWithPasswordHash,
   getUsers,
+  getUserWithApartments,
 } from '../../database/users';
 import { createSerializedRegisterSessionTokenCookie } from '../../utils/cookies';
 import { createCsrfSecret } from '../../utils/csrf';
@@ -32,10 +41,11 @@ type Args = {
   id: string;
 };
 type ArgsId = {
-  // userId: number;
   userId: string;
 };
-
+type Token = {
+  token: string;
+};
 type UserInput = {
   id: string;
   username: string;
@@ -54,15 +64,18 @@ type LoginArgument = {
   password?: string;
   id: string;
 };
+
 type UserAuthenticationContext = {
+  isLoggedIn: boolean;
+  reg: { cookies: { sessionToken: string } };
+  user: {
+    id: number;
+    username: string;
+  };
   res: {
     setHeader: (setCookie: string, cookieValue: string) => void;
   };
 };
-/* type AuthenicationContext = {
-  isLoggedIn: boolean;
-  reg: { cookies: { sessionToken: string } };
-}; */
 
 type ApartmentInput = {
   id: string;
@@ -72,7 +85,7 @@ type ApartmentInput = {
   city: string;
   unit: string;
   zip: string;
-  rent: string;
+  rent: number;
   occupied: boolean;
   image: string;
 };
@@ -89,16 +102,21 @@ const typeDefs = gql`
 
   type Apartment {
     id: ID!
-    ## user: [User]
-    ## user: User!
+    userId: ID!
     name: String!
     address: String!
     city: String!
     unit: String!
     zip: String!
-    rent: String!
+    rent: Int!
     occupied: Boolean!
     image: String!
+    tenant: Tenant
+  }
+
+  type TenantWithApartment {
+    apartments: [Apartment]
+    tenants: [Tenant]
   }
 
   type Tenant {
@@ -108,16 +126,22 @@ const typeDefs = gql`
     user: User!
     avatar: String
   }
+
+  type Token {
+    token: String
+  }
   type Query {
     users: [User]
     user(id: ID!): User
     getLoggedInUser(username: String): User
     getLoggedInTenant(username: String): Tenant
-    # apartments: [Apartment]
-    # apartmentByUserId(userId: Int!): [Apartment]
+    # apartment: [Apartment]
+    # apartments: Apartment
     apartments(id: ID!): Apartment
     apartmentByUserId(userId: String): [Apartment]
+    tenant(id: ID!): Tenant
     tenantByUserId(userId: String): [Tenant]
+    tenantWithApartments(userId: String): TenantWithApartment
   }
 
   type Mutation {
@@ -129,6 +153,7 @@ const typeDefs = gql`
       avatar: String
     ): Tenant
     login(username: String!, password: String!): User
+    tenantLogin(username: String!, password: String!): Tenant
     createApartment(
       userId: ID
       name: String!
@@ -136,10 +161,12 @@ const typeDefs = gql`
       city: String!
       unit: String!
       zip: String!
-      rent: String!
+      rent: Int!
       occupied: Boolean!
       image: String
     ): Apartment
+    logout(token: String!): Token
+    tenantLogout(token: String!): Token
   }
 `;
 
@@ -151,23 +178,9 @@ const resolvers = {
     getLoggedInUser: async (parent: string, args: { username: string }) => {
       return await getUserBySessionToken(args.username);
     },
-
-    /* getLoggedInUser: async (
-      parent: string,
-      args: GetLoogedInUserArgs,
-      context: AuthenicationContext,
-    ): Promise<TokenUser> => {
-      if (!context.isLoggedIn) {
-        throw new GraphQLError('User is not logged in');
-      }
-      const sessionToken = context.reg.cookies.sessionToken;
-      const user = await getUserBySessionToken(sessionToken);
-
-      if (!user) {
-        throw new GraphQLError('User not found');
-      }
-      return user;
-    }, */
+    getLoggedInTenant: async (parent: string, args: { username: string }) => {
+      return await getTenantBySessionToken(args.username);
+    },
     user: async (parent: string, args: Args) => {
       return await getUserById(parseInt(args.id));
     },
@@ -177,8 +190,17 @@ const resolvers = {
     tenantByUserId: async (parent: string, args: ArgsId) => {
       return await getTenantByUserId(parseInt(args.userId));
     },
+    tenant: async (parent: string, args: Args) => {
+      return await getTenantsById(parseInt(args.id));
+    },
     apartments: async (parent: string, args: Args) => {
       return await getApartmentById(parseInt(args.id));
+    },
+    /* apartments: async (parent: string, args: Args) => {
+      return await getApartmentByUserId(parseInt(args.id));
+    }, */
+    tenantWithApartments: async () => {
+      return await getTenantsWithApartments();
     },
   },
 
@@ -287,7 +309,6 @@ const resolvers = {
         args.image,
       );
     },
-
     login: async (
       parent: string,
       args: LoginArgument,
@@ -338,6 +359,63 @@ const resolvers = {
       context.res.setHeader('Set-Cookie', serializedCookie);
 
       return await getUserByUsername(args.username);
+    },
+    tenantLogin: async (
+      parent: string,
+      args: LoginArgument,
+      context: UserAuthenticationContext,
+    ) => {
+      /* ----- Checking if the input field is empty ----- */
+      if (
+        typeof args.username !== 'string' ||
+        typeof args.password !== 'string' ||
+        !args.username ||
+        !args.password
+      ) {
+        throw new GraphQLError('Required field missing');
+      }
+
+      /* ----- Getting the Users with the Password Hash from the database ----- */
+      const userWithPasswordHash = await getTenantByUsernameWithPasswordHash(
+        args.username,
+      );
+      if (!userWithPasswordHash) {
+        throw new GraphQLError(
+          'Your Login credentials do not match, try again.',
+        );
+      }
+      /* ----- Compare the password in the database with the hashed password ----- */
+      const isPasswordValid = await bcrypt.compare(
+        args.password,
+        userWithPasswordHash.password,
+      );
+      if (!isPasswordValid) {
+        throw new GraphQLError('Your credentials do not match, try again.');
+      }
+      /* ----- Create the token ----- */
+      const token = crypto.randomBytes(80).toString('base64');
+      const csrfSecret = createCsrfSecret();
+      /* ----- Create the session ----- */
+      const session = await createTenantSession(
+        token,
+        userWithPasswordHash.id,
+        csrfSecret,
+      );
+      if (!session) {
+        throw new GraphQLError('The creation of the session has failed');
+      }
+      const serializedCookie = createSerializedRegisterSessionTokenCookie(
+        session.token,
+      );
+      context.res.setHeader('Set-Cookie', serializedCookie);
+
+      return await getTenantsByUsername(args.username);
+    },
+    logout: async (parent: string, args: Token) => {
+      return await deleteSessionByToken(args.token);
+    },
+    tenantLogout: async (parent: string, args: Token) => {
+      return await deleteTenantSessionByToken(args.token);
     },
   },
 };

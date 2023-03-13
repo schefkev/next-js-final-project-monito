@@ -20,6 +20,19 @@ export default async function ApartmentByIdPage(props: Props) {
   const nextCookies = cookies();
   const sessionToken = nextCookies.get('sessionToken');
 
+  const { data: userData } = await client.query({
+    query: gql`
+      query GetLoggedInUser($username: String) {
+        getLoggedInUser(username: $username) {
+          id
+        }
+      }
+    `,
+    variables: {
+      username: sessionToken?.value,
+    },
+  });
+
   const { data } = await client.query({
     query: gql`
       query Query($apartmentsId: ID!) {
@@ -39,7 +52,8 @@ export default async function ApartmentByIdPage(props: Props) {
       apartmentsId: props.params.apartmentId,
     },
   });
-  console.log('data:', data);
+  // console.log('data:', data);
+  // console.log('userData:', userData);
 
   return (
     <ApolloClientProvider initialApolloState={JSON.stringify([])}>
@@ -52,6 +66,11 @@ export default async function ApartmentByIdPage(props: Props) {
             <h1 className="normal-case text-xl text-info pl-6">
               {/* {data.user.username} */}
             </h1>
+          </div>
+          <div className="flex-none text-info">
+            <Link href={`/profile/${userData.getLoggedInUser.id}`}>
+              Return to Profile
+            </Link>
           </div>
         </div>
         <div className="card lg:card-side bg-base-100 shadow-xl m-8 ">

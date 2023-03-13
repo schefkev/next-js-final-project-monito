@@ -100,3 +100,16 @@ export const getUserById = cache(async (id: number) => {
   `;
   return user;
 });
+
+/* ----- GET USER WITH APARTMENTS ----- */
+export const getUserWithApartments = cache(async (id: number) => {
+  const user = await sql<{ id: number; userId: number; name: string }[]>`
+    SELECT
+      id, user_id, name
+    FROM
+      apartments
+    WHERE
+      apartments.user_id = ${id}
+  `;
+  return user;
+});

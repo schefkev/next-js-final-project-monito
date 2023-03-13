@@ -4,13 +4,12 @@ export const config = {
   matcher: '/logout',
 };
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
-
   const sessionToken = request.cookies.get('sessionToken')?.value;
 
   if (sessionToken) {
-    requestHeaders.set('sessionToken', sessionToken);
+    requestHeaders.set('x-sessionToken-to-delete', sessionToken);
   }
 
   const response = NextResponse.next({

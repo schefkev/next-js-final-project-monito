@@ -39,16 +39,12 @@ export const deleteExpiredSessions = cache(async () => {
 /* ----- DELETE THE SESSION BY ITS TOKEN ----- */
 
 export const deleteSessionByToken = cache(async (token: string) => {
-  const [session] = await sql<{ id: number; token: string }[]>`
+  await sql`
     DELETE FROM
       sessions
     WHERE
-      sessions.token = ${token}
-    RETURNING
-      id,
-      token
+      token = ${token}
   `;
-  return session;
 });
 
 /* ----- GET THE VALIDATED SESSION BY ITS TOKEN ----- */

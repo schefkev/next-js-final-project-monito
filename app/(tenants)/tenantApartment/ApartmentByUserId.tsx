@@ -5,9 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Apartment } from '../../../database/apartments';
 
-const getApartmentByUserId = gql`
+const getTenantWithApartment = gql`
   query Query($userId: String) {
-    apartmentByUserId(userId: $userId) {
+    tenantWithApartments(userId: $userId) {
       id
       name
       address
@@ -21,8 +21,8 @@ const getApartmentByUserId = gql`
   }
 `;
 
-export default function ApartmentsPage(props: { userId: number }) {
-  const { loading, data, refetch } = useQuery(getApartmentByUserId, {
+export default function TenantApartmentsPage(props: { userId: number }) {
+  const { loading, data, refetch } = useQuery(getTenantWithApartment, {
     onCompleted: async () => {
       await refetch();
     },
@@ -30,8 +30,8 @@ export default function ApartmentsPage(props: { userId: number }) {
   });
 
   if (loading) return <p>Loading...</p>;
-  // console.log('apartment-site:', data);
-  // console.log('user:', props.userId);
+  console.log('apartment-site:', data);
+  console.log('user:', props.userId);
 
   return (
     <div className="">

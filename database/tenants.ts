@@ -8,6 +8,27 @@ export type Tenant = {
   avatar: string;
 };
 
+/* ----- GET THE USER BY THE SESSION TOKEN */
+export const getTenantBySessionToken = cache(async (token: string) => {
+  const [tenant] = await sql<
+    { id: number; username: string; csrfSecret: string }[]
+  >`
+    SELECT
+      users.id,
+      users.username,
+      tenantsessions.csrf_secret
+    FROM
+      users
+    INNER JOIN
+      tenantsessions ON (
+        tenantsessions.token = ${token} AND
+        tenantsessions.user_id = users.id AND
+        tenantsessions.expiry_timestamp > now()
+      )
+  `;
+  return tenant;
+});
+
 /* ----- GET ALL THE TENANTS ----- */
 export const getTenants = cache(async () => {
   const tenants = await sql<Tenant[]>`
@@ -31,6 +52,21 @@ export const getTenantsById = cache(async (id: number) => {
   `;
   return tenant;
 });
+
+/* ----- GET THE TENANT BY THE HASHED PASSWORD ----- */
+export const getTenantByUsernameWithPasswordHash = cache(
+  async (username: string) => {
+    const [user] = await sql<Tenant[]>`
+    SELECT
+      *
+    FROM
+      tenants
+    WHERE
+      username = ${username}
+    `;
+    return user;
+  },
+);
 
 /* ----- GET TENANT BY USERNAME ----- */
 export const getTenantsByUsername = cache(async (username: string) => {
@@ -86,6 +122,21 @@ export const getTenantByUserId = cache(async (userId: number) => {
       tenants
     WHERE
       user_id = ${userId}
+  `;
+  return tenant;
+});
+
+/* ----- GET TENANTS WITH APARTMENTS ----- */
+export const getTenantsWithApartments = cache(async () => {
+  const tenant = await sql<Tenant[]>`
+  SELECT
+  *
+  FROM
+  apartments
+  INNER JOIN
+  tenants
+  ON
+  apartments.tenant_id = tenants.id
   `;
   return tenant;
 });

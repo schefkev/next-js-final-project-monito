@@ -6,50 +6,43 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Logo from '../../../public/logo1.svg';
+import { getSafeReturnToPath } from '../../../utils/validation';
 
-export type ApartmentResponse = {
-  id: number;
-  username: string;
-  password: string;
-  avatar: string;
-};
-
-const createTenant = gql`
-  mutation CreateTenant(
-    $username: String!
-    $password: String!
-    $userId: ID
-    $avatar: String!
-  ) {
-    createTenant(
-      username: $username
-      password: $password
-      userId: $userId
-      avatar: $avatar
-    ) {
+const loginMutation = gql`
+  mutation Login($username: String!, $password: String!) {
+    tenantLogin(username: $username, password: $password) {
       id
       username
-      avatar
     }
   }
 `;
 
-export default function CreateTenantForm(props: { userId: number }) {
+export default function TenantLoginForm(props: {
+  returnTo?: string | string[];
+}) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [avatar, setAvatar] = useState('');
   const [onError, setOnError] = useState('');
   const router = useRouter();
 
-  const [handleCreateTenant] = useMutation(createTenant, {
+  const [loginHandler] = useMutation(loginMutation, {
     variables: {
       username,
       password,
-      userId: props.userId,
-      avatar,
     },
+
     onError: (error) => {
       setOnError(error.message);
+    },
+
+    onCompleted: (data) => {
+      const returnTo = getSafeReturnToPath(props.returnTo);
+      if (returnTo) {
+        router.push(returnTo);
+        return;
+      }
+      router.replace(`/tenantProfile/${data.tenantLogin.id}`);
+      router.refresh();
     },
   });
 
@@ -62,17 +55,13 @@ export default function CreateTenantForm(props: { userId: number }) {
             <Image src={Logo} alt="Logo" width="70" height="70" />
           </Link>
         </div>
-        <div className="flex-none text-info">
-          <Link href={`/profile/${props.userId}`}>Return to Profile</Link>
-        </div>
       </header>
-      {/* ----- Create User Name ----- */}
+      {/* Registration Form */}
       <div className="flex flex-col gap-4 justify-content items-center h-screen mt-16">
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Name</span>
             <input
-              type="text"
               placeholder="Type here"
               className="input input-bordered input-md"
               value={username}
@@ -82,12 +71,10 @@ export default function CreateTenantForm(props: { userId: number }) {
             />
           </label>
         </div>
-        {/* ----- Create User Password ----- */}
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Password</span>
             <input
-              type="text"
               placeholder="Password here"
               className="input input-bordered input-md"
               value={password}
@@ -97,27 +84,11 @@ export default function CreateTenantForm(props: { userId: number }) {
             />
           </label>
         </div>
-        {/* ----- Create User Avatar ----- */}
-        <div className="form-control">
-          <label className="input-group input-group-md">
-            <span className="w-28">Avatar</span>
-            <input
-              type="text"
-              placeholder="Upload Avatar here"
-              className="input input-bordered input-md"
-              value={avatar}
-              onChange={(event) => {
-                setAvatar(event.currentTarget.value);
-              }}
-            />
-          </label>
-        </div>
-        {/* ----- Add Button ----- */}
         <button
-          onClick={async () => await handleCreateTenant()}
+          onClick={async () => await loginHandler()}
           className="btn btn-primary"
         >
-          Get Started
+          Login
         </button>
         <div className="error">{onError}</div>
       </div>
