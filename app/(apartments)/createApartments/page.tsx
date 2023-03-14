@@ -24,24 +24,9 @@ export default async function CreateApartmentPage() {
     },
   });
 
-  /*   const { data: tenantData } = await client.query({
-    query: gql`
-      query GetTenantId($userId: ID!) {
-        tenantsByUserId(userId: $userId)
-      }
-    `,
-    variables: {
-      userId: userData.getLoggedInUser.id,
-    },
-  }); */
-  // console.log('data:', tenantData);
-
   return (
     <ApolloClientProvider initialApolloState={JSON.stringify([])}>
-      <ApartmentForm
-        userId={userData.getLoggedInUser.id}
-        /*         tenantId={tenantData.tenantsByUserId.id} */
-      />
+      <ApartmentForm userId={userData.getLoggedInUser.id} />
     </ApolloClientProvider>
   );
 }

@@ -8,6 +8,7 @@ import { GraphQLError } from 'graphql';
 import {
   createApartment,
   getApartmentById,
+  getApartmentByTenantId,
   getApartmentByUserId,
   getApartments,
 } from '../../database/apartments';
@@ -42,6 +43,9 @@ type Args = {
 };
 type ArgsId = {
   userId: string;
+};
+type ArgsTenantId = {
+  tenantId: string;
 };
 type Token = {
   token: string;
@@ -103,6 +107,7 @@ const typeDefs = gql`
   type Apartment {
     id: ID!
     userId: ID!
+    tenantId: ID
     name: String!
     address: String!
     city: String!
@@ -114,7 +119,7 @@ const typeDefs = gql`
     tenant: Tenant
   }
 
-  type TenantWithApartment {
+  type ApartmentWithTenant {
     apartments: [Apartment]
     tenants: [Tenant]
   }
@@ -123,8 +128,9 @@ const typeDefs = gql`
     id: ID!
     username: String
     password: String
-    user: User!
+    # user: User!
     avatar: String
+    apartment: Apartment
   }
 
   type Token {
@@ -135,13 +141,15 @@ const typeDefs = gql`
     user(id: ID!): User
     getLoggedInUser(username: String): User
     getLoggedInTenant(username: String): Tenant
+    # apartmentWithTenant: [ApartmentWithTenant]
     # apartment: [Apartment]
     # apartments: Apartment
     apartments(id: ID!): Apartment
     apartmentByUserId(userId: String): [Apartment]
+    apartmentByTenantId(tenantId: String): [Apartment]
     tenant(id: ID!): Tenant
     tenantByUserId(userId: String): [Tenant]
-    tenantWithApartments(userId: String): TenantWithApartment
+    # tenantWithApartments(userId: String): [Apartment]
   }
 
   type Mutation {
@@ -187,6 +195,9 @@ const resolvers = {
     apartmentByUserId: async (parent: string, args: ArgsId) => {
       return await getApartmentByUserId(parseInt(args.userId));
     },
+    apartmentByTenantId: async (parent: string, args: ArgsTenantId) => {
+      return await getApartmentByTenantId(parseInt(args.tenantId));
+    },
     tenantByUserId: async (parent: string, args: ArgsId) => {
       return await getTenantByUserId(parseInt(args.userId));
     },
@@ -199,8 +210,26 @@ const resolvers = {
     /* apartments: async (parent: string, args: Args) => {
       return await getApartmentByUserId(parseInt(args.id));
     }, */
-    tenantWithApartments: async () => {
+    /*  tenantWithApartments: async (parent: string, args: ArgsTenantId) => {
+      return await getTenantsWithApartments(parseInt(args.tenantId));
+    }, */
+    /* apartmentWithTenant: async () => {
       return await getTenantsWithApartments();
+    }, */
+  },
+  // New Entry Point -- This is where the JOIN is happening
+  Apartment: {
+    tenant: async (parent: any) => {
+      const testingComponent = await getTenantsById(parseInt(parent.tenantId));
+      return testingComponent;
+      // console.log('Parents:', testingComponent);
+    },
+  },
+  Tenant: {
+    apartment: async (parent: any) => {
+      const apartment = await getApartmentById(parseInt(parent.id));
+      // return apartment;
+      console.log('parents:', parent);
     },
   },
 

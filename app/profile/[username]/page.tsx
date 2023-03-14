@@ -26,7 +26,7 @@ export default async function UserProfile({ params }: Props) {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error...</p>;
   if (!data.user) return <p>User not Found</p>;
-  // console.log(data.user);
+  // console.log('landl.:', data.user);
   return (
     <ApolloClientProvider
       initialApolloState={JSON.stringify(client.cache.extract())}
@@ -36,7 +36,7 @@ export default async function UserProfile({ params }: Props) {
         <NavBar username={data.user.username} avatar={data.user.avatar} />
         {/* ----- DASHBOARD ----- */}
         <ApartmentsPage userId={data.user.id} />
-        <TenantsPage userId={data.user.id} />
+        {/* <TenantsPage userId={data.user.id} /> */}
       </div>
     </ApolloClientProvider>
   );

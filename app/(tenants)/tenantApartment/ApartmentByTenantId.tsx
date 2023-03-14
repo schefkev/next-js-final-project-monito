@@ -7,7 +7,7 @@ import { Apartment } from '../../../database/apartments';
 
 const getTenantWithApartment = gql`
   query Query($userId: String) {
-    tenantWithApartments(userId: $userId) {
+    apartmentByTenantId(userId: $userId) {
       id
       name
       address
@@ -30,8 +30,8 @@ export default function TenantApartmentsPage(props: { userId: number }) {
   });
 
   if (loading) return <p>Loading...</p>;
-  console.log('apartment-site:', data);
-  console.log('user:', props.userId);
+  // console.log('apartment-site:', data);
+  // console.log('user:', props.userId);
 
   return (
     <div className="">

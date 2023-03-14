@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import ApartmentsPage from '../../(apartments)/apartments/ApartmentByUserId';
-import TenantApartmentsPage from '../../(tenants)/tenantApartment/ApartmentByUserId';
+import TenantApartmentsPage from '../../(tenants)/tenantApartment/ApartmentByTenantId';
 import TenantsPage from '../../(tenants)/tenants/TenantsByUserId';
 import NavBar from '../../../components/Navbar';
 import { initializeApollo } from '../../../utils/graphql';
@@ -27,7 +27,7 @@ export default async function UserProfile({ params }: Props) {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error...</p>;
   if (!data.tenant) return <p>User not Found</p>;
-  // console.log(data.tenant);
+  console.log('tenant:', data.tenant);
   return (
     <ApolloClientProvider
       initialApolloState={JSON.stringify(client.cache.extract())}

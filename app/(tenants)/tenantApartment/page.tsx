@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
 import { initializeApollo } from '../../../utils/graphql';
 import ApolloClientProvider from '../../ApolloClientProvider';
-import TenantApartmentsPage from './ApartmentByUserId';
+import TenantApartmentsPage from './ApartmentByTenantId';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +23,7 @@ export default async function ApartmentByIdPage() {
       username: sessionToken?.value,
     },
   });
-  console.log('data:', data.getLoggedInTenant.id);
+  // console.log('data:', data.getLoggedInTenant.id);
 
   return (
     <ApolloClientProvider initialApolloState={JSON.stringify([])}>

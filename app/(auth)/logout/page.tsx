@@ -7,6 +7,7 @@ import { initializeApollo } from '../../../utils/graphql';
 export default async function LogoutPage() {
   const sessionToken = headers().get('x-sessionToken-to-delete');
   const client = initializeApollo(null);
+  console.log('token:', sessionToken);
 
   if (sessionToken) {
     await deleteSessionByToken(sessionToken);

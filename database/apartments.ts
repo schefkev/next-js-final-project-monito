@@ -3,6 +3,7 @@ import { sql } from './connect';
 
 export type Apartment = {
   id: number;
+  tenantId: number;
   name: string;
   address: string;
   city: string;
@@ -11,6 +12,11 @@ export type Apartment = {
   rent: number;
   occupied: boolean;
   image: string;
+  tenant: {
+    id: number;
+    username: string;
+    avatar: string;
+  };
 };
 
 /* ----- GET THE APARTMENT BY ITS ID ----- */
@@ -109,4 +115,17 @@ export const getApartmentByUserId = cache(async (userId: number) => {
       user_id = ${userId}
   `;
   return userApartment;
+});
+
+/* ----- GET THE APARTMENT WITH THE TENANT-ID ----- */
+export const getApartmentByTenantId = cache(async (tenantId: number) => {
+  const tenantApartment = await sql<Apartment[]>`
+  SELECT
+  *
+  FROM
+  apartments
+  WHERE
+  tenant_id = ${tenantId}
+  `;
+  return tenantApartment;
 });

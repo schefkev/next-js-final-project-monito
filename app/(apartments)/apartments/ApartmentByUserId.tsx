@@ -10,13 +10,13 @@ const getApartmentByUserId = gql`
     apartmentByUserId(userId: $userId) {
       id
       name
-      address
-      city
-      unit
-      zip
-      rent
       occupied
       image
+      tenant {
+        id
+        username
+        avatar
+      }
     }
   }
 `;
@@ -30,7 +30,7 @@ export default function ApartmentsPage(props: { userId: number }) {
   });
 
   if (loading) return <p>Loading...</p>;
-  // console.log('apartment-site:', data);
+  console.log('apartment-site:', data);
   // console.log('user:', props.userId);
 
   return (
@@ -68,7 +68,25 @@ export default function ApartmentsPage(props: { userId: number }) {
                     </Link>
                     <p className="text-sm">
                       {apartment.occupied ? (
-                        <p>This apartment is currently occupied</p>
+                        <div>
+                          <p>This apartment is currently occupied</p>
+                          <Link href={`tenants/${apartment.tenant.id}`}>
+                            <div className="flex items-center mt-12">
+                              <Image
+                                className="w-12 h-12 rounded-full mr-4"
+                                src={apartment.tenant.avatar}
+                                alt={`Avatar of ${apartment.tenant.username}`}
+                                width={100}
+                                height={100}
+                              />
+                              <div className="text-sm">
+                                <p className="text-secondary">
+                                  Tenant Name: {apartment.tenant.username}
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
                       ) : (
                         <p>This apartment is currently available</p>
                       )}

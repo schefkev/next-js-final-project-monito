@@ -130,13 +130,13 @@ export const getTenantByUserId = cache(async (userId: number) => {
 export const getTenantsWithApartments = cache(async () => {
   const tenant = await sql<Tenant[]>`
   SELECT
-  *
+    *
   FROM
-  apartments
+    apartments
   INNER JOIN
-  tenants
+    tenants
   ON
-  apartments.tenant_id = tenants.id
+    apartments.tenant_id = tenants.id
   `;
   return tenant;
 });
