@@ -2,9 +2,14 @@ import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
+import PieChart from '../../../../components/DoughnutChart';
+import StackedBarChart from '../../../../components/StackBarChart';
+import { Request } from '../../../../database/requests';
 import Logo from '../../../../public/logo1.svg';
 import { initializeApollo } from '../../../../utils/graphql';
 import ApolloClientProvider from '../../../ApolloClientProvider';
+
+// import VulnChart from
 
 // import ApartmentsPage from './Apartment';
 
@@ -45,6 +50,14 @@ export default async function ApartmentByIdPage(props: Props) {
           rent
           occupied
           image
+          tenant {
+            username
+            avatar
+            requests {
+              message
+              picture
+            }
+          }
         }
       }
     `,
@@ -57,7 +70,7 @@ export default async function ApartmentByIdPage(props: Props) {
 
   return (
     <ApolloClientProvider initialApolloState={JSON.stringify([])}>
-      <div className="h-screen">
+      <div className="">
         <div className="navbar bg-secondary h-20">
           <div className="flex-1">
             <Link href="/">
@@ -73,32 +86,112 @@ export default async function ApartmentByIdPage(props: Props) {
             </Link>
           </div>
         </div>
-        <div className="card lg:card-side bg-base-100 shadow-xl m-8 ">
-          <Image
-            src={data.apartments.image}
-            alt="Apartment Name"
-            width="300"
-            height="300"
-            className="object-cover"
-          />
-          <div className="card-body">
-            <h2 className="card-title text-primary underline decoration-primary-500/25">
-              {data.apartments.name}
-            </h2>
-            <div className="grid grid-cols-3">
-              <p>Address: {data.apartments.address}</p>
-              <p>City: {data.apartments.city}</p>
-              <p>Unit: {data.apartments.unit}</p>
-              <p>Zip: {data.apartments.zip}</p>
-              <p>Rent: {data.apartments.rent} ₱</p>
-              {data.apartments.occupied ? (
-                <p>Occupied: True</p>
-              ) : (
-                <p>Occupied: False</p>
-              )}
-            </div>
+        {/* DIV WITH GRID COLS 2 */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-5 mx-8 justify-center">
+          <div className="">
+            <Image
+              src={data.apartments.image}
+              alt="Apartment Name"
+              width="300"
+              height="300"
+              className="object-cover"
+            />
+          </div>
+          {/* TABLE */}
+          <div className="col-span-2">
+            <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+              <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+                <tr className="">
+                  <th className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
+                    <td>{data.apartments.name}</td>
+                  </th>
+                </tr>
+                <tr className="px-6 py-4">
+                  <td className="px-6 py-4">Address:</td>
+                  <td>{data.apartments.address}</td>
+                </tr>
+                <tr className="px-6 py-4">
+                  <td className="px-6 py-4">City:</td>
+                  <td>{data.apartments.city}</td>
+                </tr>
+                <tr className="px-6 py-4">
+                  <td className="px-6 py-4">Unit:</td>
+                  <td>{data.apartments.unit}</td>
+                </tr>
+                <tr className="px-6 py-4">
+                  <td className="px-6 py-4">Rent:</td>
+                  <td>{data.apartments.rent} ₱</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {/* TENANT TABLE */}
+          <div className="col-span-2">
+            <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+              <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+                <tr className="">
+                  <th className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
+                    <td>Tenant</td>
+                  </th>
+                </tr>
+                <tr className="px-6 py-4">
+                  <td className="px-6 py-4">Name:</td>
+                  <td>{data.apartments.tenant.username}</td>
+                </tr>
+                <tr className="px-6 py-4">
+                  <td className="px-6 py-4">Tenant since:</td>
+                  <td>01.01.2023</td>
+                </tr>
+                <tr className="px-6 py-4">
+                  <td className="px-6 py-4">Email:</td>
+                  <td>chari.brio@google.ph</td>
+                </tr>
+                <tr className="px-6 py-4">
+                  <td className="px-6 py-4">Birthdate:</td>
+                  <td>25.12.1995</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
+        {/* DATA VISUALIZATION */}
+        {data.apartments.tenant.requests.length === 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 mt-5 mx-8">
+            <StackedBarChart />
+            <PieChart />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 mt-5 mx-8">
+            <div className="col-span-1 md:col-span-2">
+              <StackedBarChart />
+            </div>
+            <PieChart />
+            {/* REQUEST TABLE */}
+            <div className="">
+              <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+                <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+                  <tr className="">
+                    <th className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
+                      <td>Requests</td>
+                    </th>
+                  </tr>
+                  {data.apartments.tenant.requests.map((request: Request) => {
+                    return (
+                      <div key={`request-${request.id}`}>
+                        <tr className="px-6 py-4">
+                          <td className="px-6 py-4">Created: 16.03.2023</td>
+                        </tr>
+                        <tr>
+                          <td className="px-6 py-4">{request.message}</td>
+                        </tr>
+                      </div>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
       {/* <ApartmentsPage apartment={data} /> */}
     </ApolloClientProvider>
