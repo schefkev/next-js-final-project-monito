@@ -16,6 +16,21 @@ export type Apartment = {
     id: number;
     username: string;
     avatar: string;
+    requests: {
+      length: number;
+      /*  length(arg0: string, length: any): import('react').ReactNode;
+      map(
+        arg0: (request: import('./requests').Request) => JSX.Element,
+      ): import('react').ReactNode; */
+      id: number;
+      message: string;
+      picture: string;
+    };
+  };
+  requests: {
+    id: number;
+    message: string;
+    picture: string;
   };
 };
 
@@ -39,24 +54,6 @@ export const getApartments = cache(async () => {
   `;
   return apartments;
 });
-
-/* ----- GET APARTMENTS WITH TENANTS (JOIN) ----- */
-/* export const getApartmentByUserId = cache(async (userId: number) => {
-  const results = await sql<Apartment[]>`
-    SELECT
-      apartments.*,
-      tenants.username AS tenant_username
-    FROM
-      apartments
-    INNER JOIN
-      tenants
-    ON
-      apartments.tenant_id = tenants.id
-    WHERE
-      apartments.user_id = ${userId}
-  `;
-  return results;
-}); */
 
 /* ----- CREATE A NEW APARTMENT ----- */
 export const createApartment = cache(

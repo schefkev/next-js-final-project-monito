@@ -3,17 +3,43 @@ import { sql } from './connect';
 
 export type Request = {
   id: number;
-  tenant_id: number;
+  tenantId: number;
   message: string;
   picture: string;
 };
 
-// Get all users
+/* ----- GET ALL THE REQUESTS ----- */
 export const getRequests = cache(async () => {
   const requests = await sql<Request[]>`
     SELECT * FROM requests
   `;
   return requests;
+});
+
+/* ----- GET REQUEST BY ITS ID ----- */
+export const getRequestById = cache(async (id: number) => {
+  const [request] = await sql<Request[]>`
+    SELECT
+      *
+    FROM
+      requests
+    WHERE
+      id = ${id}
+  `;
+  return request;
+});
+
+/* ----- GET REQUEST BY TENANTS ID ----- */
+export const getRequestByTenantId = cache(async (tenantId: number) => {
+  const request = await sql<Request[]>`
+    SELECT
+      *
+    FROM
+      requests
+    WHERE
+      tenant_id = ${tenantId}
+  `;
+  return request;
 });
 
 /* ----- CREATE NEW REQUEST ----- */

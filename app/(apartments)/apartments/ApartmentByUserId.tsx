@@ -4,6 +4,7 @@ import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Apartment } from '../../../database/apartments';
+import { Request } from '../../../database/requests';
 
 const getApartmentByUserId = gql`
   query Query($userId: String) {
@@ -16,6 +17,10 @@ const getApartmentByUserId = gql`
         id
         username
         avatar
+        requests {
+          message
+          picture
+        }
       }
     }
   }
@@ -52,7 +57,7 @@ export default function ApartmentsPage(props: { userId: number }) {
           {data?.apartmentByUserId.map((apartment: Apartment) => {
             return (
               <div key={`apartment-${apartment.id}`}>
-                <div className="card lg:card-side bg-base-100 shadow-xl m-8">
+                <div className="card lg:card-side bg-base-100 shadow-xl m-8 h-60">
                   <Image
                     src={apartment.image}
                     alt="Apartment Name"
@@ -66,10 +71,11 @@ export default function ApartmentsPage(props: { userId: number }) {
                         {apartment.name}
                       </h2>
                     </Link>
-                    <p className="text-sm">
+                    <div className="text-sm">
                       {apartment.occupied ? (
-                        <div>
+                        <>
                           <p>This apartment is currently occupied</p>
+
                           <Link href={`tenants/${apartment.tenant.id}`}>
                             <div className="flex items-center mt-12">
                               <Image
@@ -86,11 +92,18 @@ export default function ApartmentsPage(props: { userId: number }) {
                               </div>
                             </div>
                           </Link>
-                        </div>
+                          {apartment.tenant.requests.length === 0 ? (
+                            <p />
+                          ) : (
+                            <span className="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                              {apartment.tenant.requests.length}
+                            </span>
+                          )}
+                        </>
                       ) : (
                         <p>This apartment is currently available</p>
                       )}
-                    </p>
+                    </div>
                   </div>
                 </div>
               </div>

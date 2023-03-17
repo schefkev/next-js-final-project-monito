@@ -14,7 +14,7 @@ export default async function RequestsPage() {
   const { data } = await client.query({
     query: gql`
       query GetLoggedInUser($username: String) {
-        getLoggedInUser(username: $username) {
+        getLoggedInTenant(username: $username) {
           id
         }
       }
@@ -23,13 +23,13 @@ export default async function RequestsPage() {
       username: sessionToken?.value,
     },
   });
-  // console.log(data);
+  console.log('Request Page:', data);
 
   return (
     <ApolloClientProvider
       initialApolloState={JSON.stringify(client.cache.extract())}
     >
-      <RequestsForm userId={data.getLoggedInUser.id} />
+      <RequestsForm userId={data.getLoggedInTenant.id} />
     </ApolloClientProvider>
   );
 }

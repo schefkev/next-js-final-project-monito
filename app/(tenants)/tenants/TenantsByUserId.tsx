@@ -25,8 +25,8 @@ export default function TenantsPage(props: { userId: number }) {
   });
 
   if (loading) return <p>Loading...</p>;
-  console.log('tenant-site:', data);
-  console.log('user:', props.userId);
+  // console.log('tenant-site:', data);
+  // console.log('user:', props.userId);
 
   return (
     <div className="">

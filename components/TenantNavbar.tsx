@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
-'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import LogoutButton from '../app/LogoutButton';
@@ -10,7 +9,7 @@ type Props = {
   avatar: string;
 };
 
-export default function NavBar(props: Props) {
+export default function TenantNavBar(props: Props) {
   const { username, avatar } = props;
   return (
     <div className="navbar bg-secondary h-20">
@@ -36,13 +35,10 @@ export default function NavBar(props: Props) {
             className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <Link href="/createApartments">Create Apartment</Link>
+              <Link href="/requests">Create Request</Link>
             </li>
             <li>
-              <Link href="/createTenants">Create Tenant</Link>
-            </li>
-            <li>
-              <Link className="flex-none mr-6 text-success" href="/logout">
+              <Link href="/logout" className="flex-none mr-6 text-success">
                 <LogoutButton />
               </Link>
             </li>

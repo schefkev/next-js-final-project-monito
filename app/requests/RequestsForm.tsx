@@ -32,7 +32,7 @@ export default function RequestsForm(props: { userId: number }) {
 
   const [handleCreateRequest] = useMutation(createRequest, {
     variables: {
-      userId: props.userId,
+      tenantId: props.userId,
       message,
       picture,
     },
@@ -55,10 +55,9 @@ export default function RequestsForm(props: { userId: number }) {
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Message</span>
-            <input
-              type="text"
-              placeholder="Type here"
-              className="input input-bordered input-md"
+            <textarea
+              className="textarea textarea-bordered"
+              placeholder="Request"
               value={message}
               onChange={(event) => {
                 setMessage(event.currentTarget.value);

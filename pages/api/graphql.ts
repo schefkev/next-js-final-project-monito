@@ -12,12 +12,18 @@ import {
   getApartmentByUserId,
   getApartments,
 } from '../../database/apartments';
+import {
+  createRequest,
+  getRequestByTenantId,
+  getRequests,
+} from '../../database/requests';
 import { createSession, deleteSessionByToken } from '../../database/sessions';
 import {
   createTenant,
   getTenantBySessionToken,
   getTenantByUserId,
   getTenantByUsernameWithPasswordHash,
+  getTenants,
   getTenantsById,
   getTenantsByUsername,
   getTenantsWithApartments,
@@ -81,6 +87,13 @@ type UserAuthenticationContext = {
   };
 };
 
+type RequestInput = {
+  id: string;
+  tenantId: number;
+  message: string;
+  picture: string;
+};
+
 type ApartmentInput = {
   id: string;
   userId: number;
@@ -117,39 +130,62 @@ const typeDefs = gql`
     occupied: Boolean!
     image: String!
     tenant: Tenant
-  }
-
-  type ApartmentWithTenant {
-    apartments: [Apartment]
-    tenants: [Tenant]
+    requests: Request
   }
 
   type Tenant {
     id: ID!
     username: String
     password: String
-    # user: User!
     avatar: String
+    apartmentId: ID
+    apartment: Apartment
+    requests: [Request]
+  }
+
+  type Request {
+    id: ID!
+    tenantId: ID!
+    message: String
+    picture: String
+    tenant: Tenant
+    apartmentId: ID
     apartment: Apartment
   }
 
   type Token {
     token: String
   }
+
   type Query {
-    users: [User]
-    user(id: ID!): User
+    """
+    Getting the Logged In User's
+    """
     getLoggedInUser(username: String): User
     getLoggedInTenant(username: String): Tenant
-    # apartmentWithTenant: [ApartmentWithTenant]
-    # apartment: [Apartment]
-    # apartments: Apartment
+    """
+    Users Section:
+    """
+    # users: [User]
+    user(id: ID!): User
+    """
+    Requests Section:
+    """
+    requests: [Request]
+    requestByTenantId(tenantId: String): [Request]
+    """
+    Apartments Section:
+    """
+    apartment: [Apartment]
     apartments(id: ID!): Apartment
     apartmentByUserId(userId: String): [Apartment]
     apartmentByTenantId(tenantId: String): [Apartment]
+    """
+    Tenants Section:
+    """
+    tenants: [Tenant]
     tenant(id: ID!): Tenant
     tenantByUserId(userId: String): [Tenant]
-    # tenantWithApartments(userId: String): [Apartment]
   }
 
   type Mutation {
@@ -173,6 +209,7 @@ const typeDefs = gql`
       occupied: Boolean!
       image: String
     ): Apartment
+    createRequest(tenantId: ID, message: String!, picture: String): Request
     logout(token: String!): Token
     tenantLogout(token: String!): Token
   }
@@ -180,17 +217,23 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    users: async () => {
-      return await getUsers();
-    },
     getLoggedInUser: async (parent: string, args: { username: string }) => {
       return await getUserBySessionToken(args.username);
     },
     getLoggedInTenant: async (parent: string, args: { username: string }) => {
       return await getTenantBySessionToken(args.username);
     },
+    /* users: async () => {
+      return await getUsers();
+    }, */
     user: async (parent: string, args: Args) => {
       return await getUserById(parseInt(args.id));
+    },
+    apartment: async () => {
+      return await getApartments();
+    },
+    apartments: async (parent: string, args: Args) => {
+      return await getApartmentById(parseInt(args.id));
     },
     apartmentByUserId: async (parent: string, args: ArgsId) => {
       return await getApartmentByUserId(parseInt(args.userId));
@@ -198,38 +241,50 @@ const resolvers = {
     apartmentByTenantId: async (parent: string, args: ArgsTenantId) => {
       return await getApartmentByTenantId(parseInt(args.tenantId));
     },
+    tenants: async () => {
+      return await getTenants();
+    },
     tenantByUserId: async (parent: string, args: ArgsId) => {
       return await getTenantByUserId(parseInt(args.userId));
     },
     tenant: async (parent: string, args: Args) => {
       return await getTenantsById(parseInt(args.id));
     },
-    apartments: async (parent: string, args: Args) => {
-      return await getApartmentById(parseInt(args.id));
+    requests: async () => {
+      return await getRequests();
     },
-    /* apartments: async (parent: string, args: Args) => {
-      return await getApartmentByUserId(parseInt(args.id));
-    }, */
-    /*  tenantWithApartments: async (parent: string, args: ArgsTenantId) => {
-      return await getTenantsWithApartments(parseInt(args.tenantId));
-    }, */
-    /* apartmentWithTenant: async () => {
-      return await getTenantsWithApartments();
-    }, */
+    requestByTenantId: async (parent: string, args: ArgsTenantId) => {
+      return await getRequestByTenantId(parseInt(args.tenantId));
+    },
   },
   // New Entry Point -- This is where the JOIN is happening
   Apartment: {
     tenant: async (parent: any) => {
-      const testingComponent = await getTenantsById(parseInt(parent.tenantId));
-      return testingComponent;
-      // console.log('Parents:', testingComponent);
+      const tenant = await getTenantsById(parseInt(parent.tenantId));
+      return tenant;
+      // console.log('Apartment:', tenant);
+    },
+    requests: async (parent: any) => {
+      const request = await getRequestByTenantId(parent.tenantId);
+      return request;
+      // console.log('Request:', parent);
     },
   },
+
+  Request: {
+    tenant: async (parent: any) => {
+      const tenant = await getTenantsById(parent.tenantId);
+      return tenant;
+      // console.log('Request:', tenant);
+    },
+  },
+
   Tenant: {
-    apartment: async (parent: any) => {
-      const apartment = await getApartmentById(parseInt(parent.id));
-      // return apartment;
-      console.log('parents:', parent);
+    requests: async (parent: any) => {
+      const tenantId = parent.id;
+      const requests = await getRequestByTenantId(tenantId);
+      return requests;
+      // console.log('Tenant Request:', requests);
     },
   },
 
@@ -337,6 +392,9 @@ const resolvers = {
         args.occupied,
         args.image,
       );
+    },
+    createRequest: async (parent: string, args: RequestInput) => {
+      return await createRequest(args.tenantId, args.message, args.picture);
     },
     login: async (
       parent: string,

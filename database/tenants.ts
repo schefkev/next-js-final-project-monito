@@ -14,15 +14,15 @@ export const getTenantBySessionToken = cache(async (token: string) => {
     { id: number; username: string; csrfSecret: string }[]
   >`
     SELECT
-      users.id,
-      users.username,
+      tenants.id,
+      tenants.username,
       tenantsessions.csrf_secret
     FROM
-      users
+      tenants
     INNER JOIN
       tenantsessions ON (
         tenantsessions.token = ${token} AND
-        tenantsessions.user_id = users.id AND
+        tenantsessions.user_id = tenants.id AND
         tenantsessions.expiry_timestamp > now()
       )
   `;

@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Request } from '../../../../database/requests';
 import Logo from '../../../../public/logo1.svg';
 import { initializeApollo } from '../../../../utils/graphql';
 import ApolloClientProvider from '../../../ApolloClientProvider';
@@ -40,6 +41,11 @@ export default async function ApartmentByIdPage(props: Props) {
           id
           username
           avatar
+          requests {
+            id
+            message
+            picture
+          }
         }
       }
     `,
@@ -47,7 +53,7 @@ export default async function ApartmentByIdPage(props: Props) {
       tenantId: props.params.tenantId,
     },
   });
-  console.log('data:', data);
+  // console.log('data:', data);
   // console.log('userData:', userData);
 
   return (
@@ -68,7 +74,7 @@ export default async function ApartmentByIdPage(props: Props) {
             </Link>
           </div>
         </div>
-        <div className="card lg:card-side bg-base-100 shadow-xl m-8 ">
+        <div className="card lg:card-side bg-base-100 shadow-xl m-8 h-72">
           <Image
             src={data.tenant.avatar}
             alt="Apartment Name"
@@ -80,18 +86,25 @@ export default async function ApartmentByIdPage(props: Props) {
             <h2 className="card-title text-primary underline decoration-primary-500/25">
               {data.tenant.username}
             </h2>
-            {/* <div className="grid grid-cols-3">
-              <p>Address: {data.apartments.address}</p>
-              <p>City: {data.apartments.city}</p>
-              <p>Unit: {data.apartments.unit}</p>
-              <p>Zip: {data.apartments.zip}</p>
-              <p>Rent: {data.apartments.rent} ₱</p>
-              {data.apartments.occupied ? (
-                <p>Occupied: True</p>
+            <div className="p-4">
+              <p className="pb-2">1.</p>
+              <p className="pb-2">1.</p>
+              <p className="pb-2">1.</p>
+              {data.tenant.requests.length === 0 ? (
+                <p />
               ) : (
-                <p>Occupied: False</p>
+                <div>
+                  <h3>Requests:</h3>
+                  {data.tenant.requests.map((request: Request) => {
+                    return (
+                      <span key={`request-${request.id}`}>
+                        {request.message}
+                      </span>
+                    );
+                  })}
+                </div>
               )}
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
