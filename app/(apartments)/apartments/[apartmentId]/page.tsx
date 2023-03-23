@@ -56,6 +56,7 @@ export default async function ApartmentByIdPage(props: Props) {
             requests {
               message
               picture
+              createdAt
             }
           }
         }
@@ -176,10 +177,15 @@ export default async function ApartmentByIdPage(props: Props) {
                     </th>
                   </tr>
                   {data.apartments.tenant.requests.map((request: Request) => {
+                    const createdAt = parseInt(request.createdAt);
+                    const newDate = new Date(createdAt);
+                    const dateString = `${newDate.getDate()}.${
+                      newDate.getMonth() + 1
+                    }.${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()}`;
                     return (
                       <div key={`request-${request.id}`}>
                         <tr className="px-6 py-4">
-                          <td className="px-6 py-4">Created: 16.03.2023</td>
+                          <td className="px-6 py-4">Created: {dateString}</td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4">{request.message}</td>

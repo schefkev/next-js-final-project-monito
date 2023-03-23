@@ -35,7 +35,7 @@ export default function ApartmentsPage(props: { userId: number }) {
   });
 
   if (loading) return <p>Loading...</p>;
-  console.log('apartment-site:', data);
+  // console.log('apartment-site:', data);
   // console.log('user:', props.userId);
 
   return (

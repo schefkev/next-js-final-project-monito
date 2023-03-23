@@ -38,7 +38,11 @@ export default function TenantNavBar(props: Props) {
               <Link href="/requests">Create Request</Link>
             </li>
             <li>
-              <Link href="/logout" className="flex-none mr-6 text-success">
+              <Link
+                href="/logout"
+                className="flex-none mr-6 text-success"
+                prefetch={false}
+              >
                 <LogoutButton />
               </Link>
             </li>

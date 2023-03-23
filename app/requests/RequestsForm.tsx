@@ -24,7 +24,10 @@ const createRequest = gql`
   }
 `;
 
-export default function RequestsForm(props: { userId: number }) {
+export default function RequestsForm(props: {
+  userId: number;
+  apartmentId: number;
+}) {
   const [message, setMessage] = useState('');
   const [picture, setPicture] = useState('');
   const [onError, setOnError] = useState('');
@@ -35,6 +38,7 @@ export default function RequestsForm(props: { userId: number }) {
       tenantId: props.userId,
       message,
       picture,
+      apartmentId: props.apartmentId,
     },
     onError: (error) => {
       setOnError(error.message);

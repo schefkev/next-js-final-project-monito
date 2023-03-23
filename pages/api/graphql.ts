@@ -92,6 +92,7 @@ type RequestInput = {
   tenantId: number;
   message: string;
   picture: string;
+  apartmentId: number;
 };
 
 type ApartmentInput = {
@@ -148,6 +149,7 @@ const typeDefs = gql`
     tenantId: ID!
     message: String
     picture: String
+    createdAt: String
     tenant: Tenant
     apartmentId: ID
     apartment: Apartment
@@ -209,7 +211,12 @@ const typeDefs = gql`
       occupied: Boolean!
       image: String
     ): Apartment
-    createRequest(tenantId: ID, message: String!, picture: String): Request
+    createRequest(
+      tenantId: ID
+      message: String!
+      picture: String
+      apartmentId: ID
+    ): Request
     logout(token: String!): Token
     tenantLogout(token: String!): Token
   }
@@ -394,7 +401,12 @@ const resolvers = {
       );
     },
     createRequest: async (parent: string, args: RequestInput) => {
-      return await createRequest(args.tenantId, args.message, args.picture);
+      return await createRequest(
+        args.tenantId,
+        args.message,
+        args.picture,
+        args.apartmentId,
+      );
     },
     login: async (
       parent: string,

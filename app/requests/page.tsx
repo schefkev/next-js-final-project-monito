@@ -23,13 +23,30 @@ export default async function RequestsPage() {
       username: sessionToken?.value,
     },
   });
+
+  const { data: tenantData } = await client.query({
+    query: gql`
+      query ApartmentId($tenantId: String) {
+        apartmentByTenantId(tenantId: $tenantId) {
+          id
+        }
+      }
+    `,
+    variables: {
+      tenantId: data.getLoggedInTenant.id,
+    },
+  });
   console.log('Request Page:', data);
+  console.log('Request Page AptID:', tenantData);
 
   return (
     <ApolloClientProvider
       initialApolloState={JSON.stringify(client.cache.extract())}
     >
-      <RequestsForm userId={data.getLoggedInTenant.id} />
+      <RequestsForm
+        userId={data.getLoggedInTenant.id}
+        apartmentId={tenantData.apartmentByTenantId.id}
+      />
     </ApolloClientProvider>
   );
 }

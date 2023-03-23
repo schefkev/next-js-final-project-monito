@@ -6,6 +6,8 @@ export type Request = {
   tenantId: number;
   message: string;
   picture: string;
+  createdAt: string;
+  apartmentId: number;
 };
 
 /* ----- GET ALL THE REQUESTS ----- */
@@ -44,14 +46,25 @@ export const getRequestByTenantId = cache(async (tenantId: number) => {
 
 /* ----- CREATE NEW REQUEST ----- */
 export const createRequest = cache(
-  async (tenantId: number, message: string, picture: string) => {
+  async (
+    tenantId: number,
+    message: string,
+    picture: string,
+    apartmentId: number,
+  ) => {
     const [request] = await sql<
-      { id: number; tenant_id: number; message: string; picture: string }[]
+      {
+        id: number;
+        tenant_id: number;
+        message: string;
+        picture: string;
+        apartment_id: number;
+      }[]
     >`
     INSERT INTO requests
-      (tenant_id, message, picture)
+      (tenant_id, message, picture, apartment_id)
     VALUES
-      (${tenantId}, ${message}, ${picture})
+      (${tenantId}, ${message}, ${picture}, ${apartmentId})
     RETURNING
       id,
       message,
