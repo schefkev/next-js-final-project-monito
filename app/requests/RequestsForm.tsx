@@ -47,11 +47,15 @@ export default function RequestsForm(props: {
 
   return (
     <div>
-      <header className="navbar bg-primary-focus">
+      {/* ----- HEADER ----- */}
+      <header className="navbar bg-secondary h-20">
         <div className="flex-1 ml-6">
           <Link href="/">
             <Image src={Logo} alt="Logo" width="70" height="70" />
           </Link>
+        </div>
+        <div className="flex-none text-info">
+          <Link href={`/tenantProfile/${props.userId}`}>Return to Profile</Link>
         </div>
       </header>
       {/* ----- CREATE THE REQUEST MESSAGE ----- */}

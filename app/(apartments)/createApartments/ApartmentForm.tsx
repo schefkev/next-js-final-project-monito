@@ -80,7 +80,7 @@ export default function ApartmentForm(props: { userId: number }) {
   return (
     <div>
       {/* Header */}
-      <header className="navbar bg-primary-focus">
+      <header className="navbar bg-secondary h-20">
         <div className="flex-1 ml-6">
           <Link href="/">
             <Image src={Logo} alt="Logo" width="70" height="70" />
