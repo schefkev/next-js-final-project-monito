@@ -42,7 +42,11 @@ export default function NavBar(props: Props) {
               <Link href="/createTenants">Create Tenant</Link>
             </li>
             <li>
-              <Link className="flex-none mr-6 text-success" href="/logout">
+              <Link
+                className="flex-none mr-6 text-success"
+                href="/logout"
+                prefetch={false}
+              >
                 <LogoutButton />
               </Link>
             </li>
