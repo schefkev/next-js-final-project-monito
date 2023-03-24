@@ -4,7 +4,6 @@ import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Apartment } from '../../../database/apartments';
-import { Request } from '../../../database/requests';
 
 const getApartmentByUserId = gql`
   query Query($userId: String) {

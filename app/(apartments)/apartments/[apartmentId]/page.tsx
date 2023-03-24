@@ -97,6 +97,7 @@ export default async function ApartmentByIdPage(props: Props) {
               height="300"
               className="object-cover"
             />
+            <Link href="/stats">Update Data</Link>
           </div>
           {/* TABLE */}
           <div className="col-span-2">
