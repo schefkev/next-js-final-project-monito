@@ -85,7 +85,7 @@ export default async function ApartmentByIdPage(props: Props) {
             </Link>
           </div>
         </div>
-        {/* DIV WITH GRID COLS 2 */}
+        {/* ----- DIV WITH GRID COLS 2 ----- */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-5 mx-8 justify-center">
           <div className="">
             <Image
@@ -102,13 +102,13 @@ export default async function ApartmentByIdPage(props: Props) {
               Update Data
             </Link>
           </div>
-          {/* TABLE */}
+          {/* ----- APARTMENTS TABLE ----- */}
           <div className="col-span-2">
             <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
               <tbody className="divide-y divide-gray-100 border-t border-gray-100">
                 <tr className="">
                   <th className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
-                    <td>{data.apartments.name}</td>
+                    <td>Apartment: {data.apartments.name}</td>
                   </th>
                 </tr>
                 <tr className="px-6 py-4">
@@ -130,7 +130,7 @@ export default async function ApartmentByIdPage(props: Props) {
               </tbody>
             </table>
           </div>
-          {/* TENANT TABLE */}
+          {/* ----- TENANT TABLE ----- */}
           <div className="col-span-2">
             <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
               <tbody className="divide-y divide-gray-100 border-t border-gray-100">
@@ -159,7 +159,7 @@ export default async function ApartmentByIdPage(props: Props) {
             </table>
           </div>
         </div>
-        {/* DATA VISUALIZATION */}
+        {/* ----- DATA VISUALIZATION ----- */}
         {data.apartments.tenant.requests.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 mt-5 mx-8">
             <StackedBarChart />
@@ -171,7 +171,7 @@ export default async function ApartmentByIdPage(props: Props) {
               <StackedBarChart />
             </div>
             <PieChart />
-            {/* REQUEST TABLE */}
+            {/* ----- REQUEST TABLE ----- */}
             <div className="">
               <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
                 <tbody className="divide-y divide-gray-100 border-t border-gray-100">
