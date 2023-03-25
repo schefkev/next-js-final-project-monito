@@ -9,6 +9,7 @@ export type Stats = {
   mortgage: number;
   expense: number;
   month: string;
+  year: string;
 };
 
 /* ----- GET ALL THE STATS ----- */
@@ -28,6 +29,7 @@ export const createStats = cache(
     mortgage: number,
     expense: number,
     month: string,
+    year: string,
   ) => {
     const [stats] = await sql<
       {
@@ -38,18 +40,20 @@ export const createStats = cache(
         mortgage: number;
         expense: number;
         month: string;
+        year: string;
       }[]
     >`
   INSERT INTO stats
-    (user_id, apartment_id, rent, mortgage, expense, month)
+    (user_id, apartment_id, rent, mortgage, expense, month, year)
   VALUES
-    (${userId}, ${apartmentId}, ${rent}, ${mortgage}, ${expense}, ${month})
+    (${userId}, ${apartmentId}, ${rent}, ${mortgage}, ${expense}, ${month}, ${year})
   RETURNING
     id,
     rent,
     mortgage,
     expense,
-    month
+    month,
+    year
   `;
     return stats;
   },

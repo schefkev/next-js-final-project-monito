@@ -5,9 +5,10 @@ export async function up(sql) {
     user_id integer REFERENCES users(id) ON DELETE CASCADE,
     apartment_id integer REFERENCES apartments(id) ON DELETE CASCADE,
     rent decimal(10,2) NOT NULL,
-    mortgage decimal(10,2) NOT NULL,
-    expense decimal(10,2) NOT NULL,
-    month varchar(20)
+    mortgage decimal(10,2),
+    expense decimal(10,2),
+    month varchar(20),
+    year varchar(20)
   )`;
 }
 

@@ -18,6 +18,7 @@ import {
   getRequests,
 } from '../../database/requests';
 import { createSession, deleteSessionByToken } from '../../database/sessions';
+import { createStats } from '../../database/stats';
 import {
   createTenant,
   getTenantBySessionToken,
@@ -95,6 +96,17 @@ type RequestInput = {
   apartmentId: number;
 };
 
+type StatsInput = {
+  id: string;
+  userId: number;
+  apartmentId: number;
+  rent: number;
+  mortgage: number;
+  expense: number;
+  month: string;
+  year: string;
+};
+
 type ApartmentInput = {
   id: string;
   userId: number;
@@ -155,6 +167,17 @@ const typeDefs = gql`
     apartment: Apartment
   }
 
+  type Stats {
+    id: ID!
+    userId: ID!
+    apartmentId: ID!
+    rent: Int
+    mortgage: Int
+    expense: Int
+    month: String
+    year: String
+  }
+
   type Token {
     token: String
   }
@@ -188,6 +211,10 @@ const typeDefs = gql`
     tenants: [Tenant]
     tenant(id: ID!): Tenant
     tenantByUserId(userId: String): [Tenant]
+    """
+    Stats Section
+    """
+    stats: [Stats]
   }
 
   type Mutation {
@@ -217,6 +244,15 @@ const typeDefs = gql`
       picture: String
       apartmentId: ID
     ): Request
+    createStat(
+      userId: ID
+      apartmentId: ID
+      rent: Int
+      mortgage: Int
+      expense: Int
+      month: String
+      year: String
+    ): Stats
     logout(token: String!): Token
     tenantLogout(token: String!): Token
   }
@@ -406,6 +442,17 @@ const resolvers = {
         args.message,
         args.picture,
         args.apartmentId,
+      );
+    },
+    createStat: async (parent: string, args: StatsInput) => {
+      return await createStats(
+        args.userId,
+        args.apartmentId,
+        args.rent,
+        args.mortgage,
+        args.expense,
+        args.month,
+        args.year,
       );
     },
     login: async (

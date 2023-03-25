@@ -9,8 +9,6 @@ import Logo from '../../../../public/logo1.svg';
 import { initializeApollo } from '../../../../utils/graphql';
 import ApolloClientProvider from '../../../ApolloClientProvider';
 
-// import VulnChart from
-
 // import ApartmentsPage from './Apartment';
 
 export const dynamic = 'force-dynamic';
@@ -97,7 +95,12 @@ export default async function ApartmentByIdPage(props: Props) {
               height="300"
               className="object-cover"
             />
-            <Link href="/stats">Update Data</Link>
+            <Link
+              href={`apartments/${props.params.apartmentId}/Stats`}
+              id={data.apartments.id}
+            >
+              Update Data
+            </Link>
           </div>
           {/* TABLE */}
           <div className="col-span-2">
