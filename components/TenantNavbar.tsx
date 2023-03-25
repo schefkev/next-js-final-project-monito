@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import Image from 'next/image';
 import Link from 'next/link';
-import LogoutButton from '../app/LogoutButton';
 import Logo from '../public/logo1.svg';
+import LogoutButton from './LogoutButton';
 
 type Props = {
   username: string;

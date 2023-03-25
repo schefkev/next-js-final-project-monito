@@ -2,15 +2,15 @@ import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
+import LoginButton from '../components/LoginButton';
+import LogoutButton from '../components/LogoutButton';
+import RegisterButton from '../components/RegisterButton';
 import Dashboard from '../public/images/Dashboard.png';
 import Maintenance from '../public/images/Maintenance.png';
 import Overview from '../public/images/Overview.png';
 import Service from '../public/images/Service.png';
 import Logo from '../public/logo1.svg';
 import { initializeApollo } from '../utils/graphql';
-import LoginButton from './LoginButton';
-import LogoutButton from './LogoutButton';
-import RegisterButton from './RegisterButton';
 
 export const dynamic = 'force-dynamic';
 
