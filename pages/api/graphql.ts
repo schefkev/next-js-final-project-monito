@@ -11,6 +11,8 @@ import {
   getApartmentByTenantId,
   getApartmentByUserId,
   getApartments,
+  updateApartmentById,
+  updateApartmentWithTenantId,
 } from '../../database/apartments';
 import {
   createRequest,
@@ -28,6 +30,7 @@ import {
   getTenantsById,
   getTenantsByUsername,
   getTenantsWithApartments,
+  getTenantWithApartmentId,
 } from '../../database/tenants';
 import {
   createTenantSession,
@@ -54,6 +57,9 @@ type ArgsId = {
 type ArgsTenantId = {
   tenantId: string;
 };
+type ArgsApartmentId = {
+  apartmentId: string;
+};
 type Token = {
   token: string;
 };
@@ -68,7 +74,9 @@ type TenantInput = {
   username: string;
   password: string;
   userId: number;
+  apartmentId: number;
   avatar: string;
+  since: string;
 };
 type LoginArgument = {
   username?: string;
@@ -108,8 +116,9 @@ type StatsInput = {
 };
 
 type ApartmentInput = {
-  id: string;
+  id: number;
   userId: number;
+  tenantId: string;
   name: string;
   address: string;
   city: string;
@@ -154,6 +163,9 @@ const typeDefs = gql`
     apartmentId: ID
     apartment: Apartment
     requests: [Request]
+    since: String
+    mail: String
+    birthday: String
   }
 
   type Request {
@@ -211,6 +223,7 @@ const typeDefs = gql`
     tenants: [Tenant]
     tenant(id: ID!): Tenant
     tenantByUserId(userId: String): [Tenant]
+    tenantByApartmentId(apartmentId: String): [Tenant]
     """
     Stats Section
     """
@@ -223,7 +236,9 @@ const typeDefs = gql`
       username: String!
       password: String!
       userId: ID
+      apartmentId: ID
       avatar: String
+      since: String
     ): Tenant
     login(username: String!, password: String!): User
     tenantLogin(username: String!, password: String!): Tenant
@@ -255,6 +270,7 @@ const typeDefs = gql`
     ): Stats
     logout(token: String!): Token
     tenantLogout(token: String!): Token
+    updateApartmentById(id: ID!, rent: Int, occupied: Boolean): Apartment
   }
 `;
 
@@ -293,6 +309,9 @@ const resolvers = {
     tenant: async (parent: string, args: Args) => {
       return await getTenantsById(parseInt(args.id));
     },
+    tenantByApartmentId: async (parent: string, args: ArgsApartmentId) => {
+      return await getTenantWithApartmentId(parseInt(args.apartmentId));
+    },
     requests: async () => {
       return await getRequests();
     },
@@ -303,8 +322,22 @@ const resolvers = {
   // New Entry Point -- This is where the JOIN is happening
   Apartment: {
     tenant: async (parent: any) => {
-      const tenant = await getTenantsById(parseInt(parent.tenantId));
-      return tenant;
+      const apartmentId = parent.id;
+      const tenantResult = await getTenantWithApartmentId(apartmentId);
+      const tenant = tenantResult[0];
+      if (tenant) {
+        return {
+          id: tenant.id,
+          username: tenant.username,
+          avatar: tenant.avatar,
+          mail: tenant.mail,
+          since: tenant.since,
+          birthday: tenant.birthday,
+        };
+      }
+      return null;
+      // const tenant = await getTenantsById(parseInt(parent.tenantId));
+      // return tenant;
       // console.log('Apartment:', tenant);
     },
     requests: async (parent: any) => {
@@ -328,6 +361,11 @@ const resolvers = {
       const requests = await getRequestByTenantId(tenantId);
       return requests;
       // console.log('Tenant Request:', requests);
+    },
+    apartment: async (parent: any) => {
+      const apartment = await getApartmentById(parent.apartmentId);
+      return apartment;
+      // console.log('apartment:', apartment);
     },
   },
 
@@ -403,7 +441,9 @@ const resolvers = {
         args.username,
         passwordHash,
         args.userId,
+        args.apartmentId,
         args.avatar,
+        args.since,
       );
       if (!newUser) {
         throw new GraphQLError('User creation failed');
@@ -562,6 +602,9 @@ const resolvers = {
     },
     tenantLogout: async (parent: string, args: Token) => {
       return await deleteTenantSessionByToken(args.token);
+    },
+    updateApartmentById: async (parent: any, args: ApartmentInput) => {
+      return await updateApartmentById(args.id, args.rent, args.occupied);
     },
   },
 };

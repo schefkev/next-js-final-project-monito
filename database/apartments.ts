@@ -126,3 +126,44 @@ export const getApartmentByTenantId = cache(async (tenantId: number) => {
   `;
   return tenantApartment;
 });
+
+/* ----- UPDATE APARTMENT WITH TENANT ID ----- */
+export const updateApartmentWithTenantId = cache(
+  async (id: number, tenantId: number) => {
+    if (Number.isNaN(id)) {
+      return undefined;
+    }
+
+    const [apartment] = await sql<Apartment[]>`
+    UPDATE
+      apartments
+    SET
+      tenant_id = ${tenantId}
+    WHERE
+      id = ${id}
+    RETURNING *
+  `;
+    return apartment;
+  },
+);
+
+/* ----- UPDATE THE APARTMENT WITH ITS ID ----- */
+export const updateApartmentById = cache(
+  async (id: number, rent: number, occupied: boolean) => {
+    if (Number.isNaN(id)) {
+      return undefined;
+    }
+
+    const [apartment] = await sql<Apartment[]>`
+  UPDATE
+    apartments
+  SET
+    rent = ${rent},
+    occupied = ${occupied}
+  WHERE
+    id = ${id}
+  RETURNING *
+  `;
+    return apartment;
+  },
+);

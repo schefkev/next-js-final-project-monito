@@ -6,13 +6,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import Logo from '../../../public/logo1.svg';
 
-export type ApartmentResponse = {
-  id: number;
-  username: string;
-  password: string;
-  avatar: string;
-};
-
 const createApartment = gql`
   mutation CreateApartment(
     $userId: ID

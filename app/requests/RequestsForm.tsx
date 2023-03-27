@@ -15,8 +15,18 @@ export type ApartmentResponse = {
 };
 
 const createRequest = gql`
-  mutation CreateRequest($tenantId: ID!, $message: String!, $picture: String!) {
-    createRequest(tenantId: $tenantId, message: $message, picture: $picture) {
+  mutation CreateRequest(
+    $tenantId: ID!
+    $message: String!
+    $picture: String!
+    $apartmentId: ID
+  ) {
+    createRequest(
+      tenantId: $tenantId
+      message: $message
+      picture: $picture
+      apartmentId: $apartmentId
+    ) {
       id
       message
       picture
@@ -42,6 +52,9 @@ export default function RequestsForm(props: {
     },
     onError: (error) => {
       setOnError(error.message);
+    },
+    onCompleted: () => {
+      router.refresh();
     },
   });
 

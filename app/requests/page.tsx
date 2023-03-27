@@ -26,9 +26,9 @@ export default async function RequestsPage() {
 
   const { data: tenantData } = await client.query({
     query: gql`
-      query ApartmentId($tenantId: String) {
-        apartmentByTenantId(tenantId: $tenantId) {
-          id
+      query ApartmentId($tenantId: ID) {
+        tenant(id: $tenantId) {
+          apartmentId
         }
       }
     `,
@@ -45,7 +45,7 @@ export default async function RequestsPage() {
     >
       <RequestsForm
         userId={data.getLoggedInTenant.id}
-        apartmentId={tenantData.apartmentByTenantId.id}
+        apartmentId={tenantData.tenant.apartmentId}
       />
     </ApolloClientProvider>
   );

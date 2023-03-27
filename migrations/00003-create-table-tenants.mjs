@@ -5,7 +5,11 @@ export async function up(sql) {
     username varchar(80) NOT NULL UNIQUE,
     password varchar(70) NOT NULL,
     user_id integer REFERENCES users(id) ON DELETE CASCADE,
-    avatar text
+    apartment_id integer REFERENCES apartments(id) ON DELETE CASCADE,
+    avatar text,
+    mail varchar(70),
+    since varchar(70),
+    birthday varchar(40)
   )`;
 }
 

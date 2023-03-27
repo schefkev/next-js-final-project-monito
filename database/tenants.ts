@@ -5,7 +5,12 @@ export type Tenant = {
   id: number;
   username: string;
   password: string;
+  userId: number;
+  apartmentId: number;
   avatar: string;
+  mail: string;
+  since: string;
+  birthday: string;
 };
 
 /* ----- GET THE USER BY THE SESSION TOKEN */
@@ -88,7 +93,9 @@ export const createTenant = cache(
     username: string,
     password: string,
     userId: number,
+    apartmentId: number,
     avatar: string,
+    since: string,
   ) => {
     const [tenant] = await sql<
       {
@@ -96,22 +103,38 @@ export const createTenant = cache(
         username: string;
         password: string;
         user_id: number;
+        apartment_id: number;
         avatar: string;
+        since: string;
       }[]
     >`
       INSERT INTO tenants
-        (username, password, user_id, avatar)
+        (username, password, user_id, apartment_id, avatar, since)
       VALUES
-        (${username}, ${password}, ${userId}, ${avatar})
+        (${username}, ${password}, ${userId}, ${apartmentId}, ${avatar}, ${since})
       RETURNING
         id,
         username,
         password,
-        avatar
+        avatar,
+        since
       `;
     return tenant;
   },
 );
+
+/* ----- GET THE TENANT WITH THE APARTMENT ID ----- */
+export const getTenantWithApartmentId = cache(async (apartmentId: number) => {
+  const tenant = await sql<Tenant[]>`
+    SELECT
+      *
+    FROM
+      tenants
+    WHERE
+      apartment_id = ${apartmentId}
+  `;
+  return tenant;
+});
 
 /* ----- GET THE TENANT WITH THE USER-ID ----- */
 export const getTenantByUserId = cache(async (userId: number) => {

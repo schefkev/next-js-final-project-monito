@@ -18,6 +18,7 @@ export default async function ApartmentByIdPage(props: Props) {
       query Query($apartmentsId: ID!) {
         apartments(id: $apartmentsId) {
           id
+          occupied
         }
       }
     `,
@@ -28,7 +29,10 @@ export default async function ApartmentByIdPage(props: Props) {
 
   return (
     <ApolloClientProvider initialApolloState={JSON.stringify([])}>
-      <ApartmentsPage apartmentId={data.apartments.id} />
+      <ApartmentsPage
+        apartmentId={data.apartments.id}
+        apartmentOccupation={data.apartments.occupied}
+      />
     </ApolloClientProvider>
   );
 }
