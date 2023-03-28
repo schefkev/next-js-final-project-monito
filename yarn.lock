@@ -5578,14 +5578,6 @@ jest-environment-node@^29.5.0:
     jest-mock "^29.5.0"
     jest-util "^29.5.0"
 
-jest-environment@^9.0.4:
-  version "9.0.4"
-  resolved "https://registry.yarnpkg.com/jest-environment/-/jest-environment-9.0.4.tgz#4e4c79b977c471407ecbb9de9a7303ef381a9d14"
-  integrity sha512-sdOTqHkZGOX5Jl/vI/sj2zXOZIDPByb036XrKTwC1tdIMJ/Ya9drpj5sUa0Bin6mMLsygdEhaq1Ykt8CmIcw9w==
-  dependencies:
-    jest-mock "^9.0.4"
-    jest-util "^9.0.4"
-
 jest-get-type@^29.4.3:
   version "29.4.3"
   resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-29.4.3.tgz#1ab7a5207c995161100b5187159ca82dd48b3dd5"
@@ -5643,7 +5635,7 @@ jest-message-util@^29.5.0:
     slash "^3.0.0"
     stack-utils "^2.0.3"
 
-jest-mock@^29.5.0, jest-mock@^9.0.4:
+jest-mock@^29.5.0:
   version "29.5.0"
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-29.5.0.tgz#26e2172bcc71d8b0195081ff1f146ac7e1518aed"
   integrity sha512-GqOzvdWDE4fAV2bWQLQCkujxYWL7RxjCnj71b5VhDAGOevB3qj3Ovg26A5NI84ZpODxyzaozXLOh2NCgkbvyaw==
@@ -5769,7 +5761,7 @@ jest-snapshot@^29.5.0:
     pretty-format "^29.5.0"
     semver "^7.3.5"
 
-jest-util@^29.5.0, jest-util@^9.0.4:
+jest-util@^29.5.0:
   version "29.5.0"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-29.5.0.tgz#24a4d3d92fc39ce90425311b23c27a6e0ef16b8f"
   integrity sha512-RYMgG/MTadOr5t8KdhejfvUU82MxsCu5MF6KuDUHl+NuwzUt+Sm6jJWxTJVrDR1j5M/gJVCPKQEpWXY+yIQ6lQ==
