@@ -62,7 +62,7 @@ export default function TenantLoginForm(props: {
           <label className="input-group input-group-md">
             <span className="w-28">Name</span>
             <input
-              placeholder="Type here"
+              placeholder="Please enter username"
               className="input input-bordered input-md"
               value={username}
               onChange={(event) => {
@@ -75,7 +75,8 @@ export default function TenantLoginForm(props: {
           <label className="input-group input-group-md">
             <span className="w-28">Password</span>
             <input
-              placeholder="Password here"
+              type="password"
+              placeholder="Please enter password"
               className="input input-bordered input-md"
               value={password}
               onChange={(event) => {
