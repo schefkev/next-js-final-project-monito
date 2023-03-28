@@ -1,36 +1,58 @@
 'use client';
 
-import { gql, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
+import { CheckIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Apartment } from '../../../database/apartments';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import StackedBarChartTenant from '../../../components/StackBarChartTenant';
 import { Request } from '../../../database/requests';
 
-const getTenantWithApartment = gql`
-  query Query($tenantId: String) {
-    apartmentByTenantId(tenantId: $tenantId) {
+const updateTenantById = gql`
+  mutation updateTenantById(
+    $id: ID!
+    $mailOnEdit: String
+    $birthdayOnEdit: String
+  ) {
+    updateTenantById(id: $id, mail: $mailOnEdit, birthday: $birthdayOnEdit) {
       id
-      name
-      address
-      city
-      unit
-      zip
-      rent
-      image
+      mail
+      birthday
     }
   }
 `;
-
-const getRequestByTenant = gql`
-  query Query($tenantId: String) {
-    requestByTenantId(tenantId: $tenantId) {
-      message
-      picture
+const getTenantWithApartment = gql`
+  query Query($tenantId: ID!) {
+    tenant(id: $tenantId) {
+      username
+      since
+      mail
+      id
+      birthday
+      avatar
+      apartment {
+        address
+        city
+        id
+        image
+        name
+        rent
+        unit
+        zip
+      }
+      requests {
+        message
+        createdAt
+      }
     }
   }
 `;
 
 export default function TenantApartmentsPage(props: { userId: number }) {
+  const [mailOnEdit, setMailOnEdit] = useState('');
+  const [birthdayOnEdit, setBirthdayOnEdit] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
   const { loading, data, refetch } = useQuery(getTenantWithApartment, {
     onCompleted: async () => {
       await refetch();
@@ -38,84 +60,208 @@ export default function TenantApartmentsPage(props: { userId: number }) {
     variables: { tenantId: props.userId },
   });
 
-  const { data: requestData } = useQuery(getRequestByTenant, {
+  const [handleUpdateTenant] = useMutation(updateTenantById, {
+    variables: {
+      id: props.userId,
+      mailOnEdit,
+      birthdayOnEdit,
+    },
     onCompleted: async () => {
       await refetch();
     },
-    variables: { tenantId: props.userId },
   });
 
   if (loading) return <p>Loading...</p>;
-  // console.log('apartment-site:', data);
-  // console.log('user:', props.userId);
-  console.log('request:', requestData);
+  console.log('user:', data);
+  const rent = data.tenant.apartment.rent;
+  const newRent = rent.toLocaleString('en-US');
 
   return (
-    <div className="">
-      {data?.apartmentByTenantId.length === 0 ? (
-        <div className="flex flex-col gap-4 justify-center items-center mt-24">
-          <div className="p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-bold mb-2 text-neutral">
-              You have no appartments in your Dashboard, want to add your first
-              one?
-            </h3>
-            <div className="text-center hover:text-primary-focus">
-              <Link href="/createApartments">Create Apartment</Link>
-            </div>
-          </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-5 mx-8 justify-center">
+        <div className="">
+          <Image
+            src={data.tenant.apartment.image}
+            alt="Apartment Name"
+            width="300"
+            height="300"
+            className="object-cover"
+          />
+          <button
+            className="btn btn-xs btn-primary mt-5"
+            onClick={() => {
+              router.replace(`/requests`);
+              router.refresh();
+            }}
+          >
+            Create New Request
+          </button>
         </div>
-      ) : (
-        <div>
-          {data?.apartmentByTenantId.map((apartment: Apartment) => {
-            return (
-              <div key={`apartment-${apartment.id}`}>
-                <div className="card lg:card-side bg-base-100 shadow-xl m-8">
-                  <Image
-                    src={apartment.image}
-                    alt="Apartment Name"
-                    width="300"
-                    height="300"
-                    className="object-cover"
-                  />
-                  <div className="card-body">
-                    <h2 className="card-title text-primary underline decoration-primary-500/25">
-                      {apartment.name}
-                    </h2>
-                    <p>Address: {apartment.address}</p>
-                    <p>Unit: {apartment.unit}</p>
-                    <p>City: {apartment.city}</p>
-                    <p>Zip Code: {apartment.zip}</p>
-                    <p>Rent: {apartment.rent} ₱</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        {/* ----- APARTMENT TABLE ----- */}
+        <div className="col-span-2">
+          <table className=" w-full border-collapse bg-white text-left text-sm text-gray-500">
+            <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+              <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
+                <th className="flex-1">
+                  Apartment: {data.tenant.apartment.name}
+                </th>
+              </tr>
+
+              <tr className="px-6 py-4">
+                <td className="px-6 py-4">Address:</td>
+                <td>{data.tenant.apartment.name}</td>
+              </tr>
+              <tr className="px-6 py-4">
+                <td className="px-6 py-4">City:</td>
+                <td>{data.tenant.apartment.city}</td>
+              </tr>
+              <tr className="px-6 py-4">
+                <td className="px-6 py-4">Unit:</td>
+                <td>{data.tenant.apartment.unit}</td>
+              </tr>
+              <tr className="px-6 py-4">
+                <td className="px-6 py-4">Rent:</td>
+                <td>{newRent} ₱</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      )}
-      <div>
-        {requestData?.requestByTenantId.map((request: Request) => {
-          return (
-            <div key={`request-${request.id}`}>
-              <div className="card lg:card-side bg-base-100 shadow-xl m-8">
-                <Image
-                  src={request.picture}
-                  alt="Request Picture"
-                  width="300"
-                  height="300"
-                  className="object-cover"
-                />
-                <div className="card-body">
-                  <h2 className="card-title text-primary underline decoration-primary-500/25">
-                    Service Request Message
-                  </h2>
-                  <p>{request.message}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {/* ----- TENANT TABLE ----- */}
+        <div className="col-span-2">
+          <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+            <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+              <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
+                <th className="flex-1">Tenant</th>
+              </tr>
+              <tr className="px-6 py-4">
+                <td className="px-6 py-4">Name:</td>
+                <td>{data.tenant.username}</td>
+              </tr>
+              <tr className="px-6 py-4">
+                <td className="px-6 py-4">Tenant since:</td>
+                <td>{data.tenant.since ?? '-'}</td>
+              </tr>
+              {/* ----- UPDATE TENANT MAIL ----- */}
+              <tr className="px-6 py-4">
+                <td className="px-6 py-4">Email:</td>
+                <td className="flex items-center space-x-10">
+                  {!isEditing ? (
+                    <span className="flex-grow py-4">
+                      {data.tenant.mail ?? '-'}
+                    </span>
+                  ) : (
+                    <input
+                      type="email"
+                      value={mailOnEdit}
+                      onChange={(event) => {
+                        setMailOnEdit(event.currentTarget.value);
+                      }}
+                    />
+                  )}
+                  {!isEditing ? (
+                    <button
+                      className="flex-none py-4"
+                      onClick={() => {
+                        setIsEditing(true);
+                        setMailOnEdit(data.tenant.mail);
+                      }}
+                    >
+                      <PencilSquareIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  ) : (
+                    <button
+                      className="flex-none py-4"
+                      onClick={async () => {
+                        setIsEditing(false);
+                        await handleUpdateTenant();
+                      }}
+                    >
+                      <CheckIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  )}
+                </td>
+              </tr>
+              {/* ----- UPDATE TENANT BIRTHDAY ----- */}
+              <tr className="px-6 py-4">
+                <td className="px-6 py-4">Birthdate:</td>
+                <td className="flex items-center space-x-10">
+                  {!isEditing ? (
+                    <span className="flex-grow py-4">
+                      {data.tenant.birthday ?? '-'}
+                    </span>
+                  ) : (
+                    <input
+                      className="flex-none"
+                      value={birthdayOnEdit}
+                      onChange={(event) => {
+                        setBirthdayOnEdit(event.currentTarget.value);
+                      }}
+                    />
+                  )}
+                  {!isEditing ? (
+                    <button
+                      className="flex-none items-center py-4"
+                      onClick={() => {
+                        setIsEditing(true);
+                        setBirthdayOnEdit(data.tenant.birthday);
+                      }}
+                    >
+                      <PencilSquareIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  ) : (
+                    <button
+                      className="flex-none items-center py-4"
+                      onClick={async () => {
+                        setIsEditing(false);
+                        await handleUpdateTenant();
+                      }}
+                    >
+                      <CheckIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+      {/* ----- REQUEST TABLE ----- */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-5 mx-8 justify-center">
+        <div className="col-span-1 md:col-span-3">
+          <StackedBarChartTenant />
+        </div>
+        <div className="col-span-2 ">
+          <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+            <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+              <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
+                <th className="flex-1">Requests</th>
+                <th>
+                  <button className="flex-none">
+                    <PencilSquareIcon className="w-5 h-5 text-primary" />
+                  </button>
+                </th>
+              </tr>
+              {data.tenant.requests.map((request: Request) => {
+                const createdAt = parseInt(request.createdAt);
+                const newDate = new Date(createdAt);
+                const dateString = `${newDate.getDate()}.${
+                  newDate.getMonth() + 1
+                }.${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()}`;
+                return (
+                  <div key={`request-${request.id}`}>
+                    <tr className="px-6 py-4">
+                      <td className="px-6 py-4">Created: {dateString}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-4">{request.message}</td>
+                    </tr>
+                  </div>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   );
 }

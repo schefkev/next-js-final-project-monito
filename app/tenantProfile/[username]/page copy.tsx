@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
-import ApartmentsPage from '../../(apartments)/apartments/ApartmentByUserId';
-import NavBar from '../../../components/Navbar';
+import TenantApartmentsPage from '../../(tenants)/tenantsApartment/ApartmentByTenantId';
+import TenantNavBar from '../../../components/TenantNavbar';
 import { initializeApollo } from '../../../utils/graphql';
 import ApolloClientProvider from '../../ApolloClientProvider';
 
@@ -13,8 +13,8 @@ export default async function UserProfile({ params }: Props) {
   const userId = params.username;
   const { data, loading, error } = await client.query({
     query: gql`
-      query GetUserById($id: ID! = ${userId}) {
-        user(id: $id) {
+      query GetTenantsById($id: ID! = ${userId}) {
+        tenant(id: $id) {
           id
           username
           avatar
@@ -24,16 +24,20 @@ export default async function UserProfile({ params }: Props) {
   });
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error...</p>;
-  if (!data.user) return <p>User not Found</p>;
+  if (!data.tenant) return <p>User not Found</p>;
+  // console.log('tenant:', data.tenant);
   return (
     <ApolloClientProvider
       initialApolloState={JSON.stringify(client.cache.extract())}
     >
-      <div className="">
+      <div className="h-screen">
         {/* ----- NAVBAR ----- */}
-        <NavBar username={data.user.username} avatar={data.user.avatar} />
+        <TenantNavBar
+          username={data.tenant.username}
+          avatar={data.tenant.avatar}
+        />
         {/* ----- DASHBOARD ----- */}
-        <ApartmentsPage userId={data.user.id} />
+        <TenantApartmentsPage userId={data.tenant.id} />
       </div>
     </ApolloClientProvider>
   );

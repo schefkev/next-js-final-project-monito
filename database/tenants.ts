@@ -163,3 +163,40 @@ export const getTenantsWithApartments = cache(async () => {
   `;
   return tenant;
 });
+
+/* ----- UPDATE THE TENANT WITH ITS ID ----- */
+export const updateTenantById = cache(
+  async (id: number, mail: string, birthday: string) => {
+    if (Number.isNaN(id)) {
+      return undefined;
+    }
+
+    const [tenant] = await sql<Tenant[]>`
+  UPDATE
+    tenants
+  SET
+    mail = ${mail},
+    birthday = ${birthday}
+  WHERE
+    id = ${id}
+  RETURNING *
+  `;
+    return tenant;
+  },
+);
+
+/* ----- DELETE TENANT WITH ITS ID ----- */
+export const deleteTenantById = cache(async (id: number) => {
+  if (Number.isNaN(id)) {
+    return undefined;
+  }
+
+  const [tenant] = await sql<Tenant[]>`
+  DELETE FROM
+    tenants
+  WHERE
+    id = ${id}
+  RETURNING *
+  `;
+  return tenant;
+});

@@ -167,3 +167,19 @@ export const updateApartmentById = cache(
     return apartment;
   },
 );
+
+/* ----- DELETE THE APARTMENT WITH ITS ID ----- */
+export const deleteApartmentById = cache(async (id: number) => {
+  if (Number.isNaN(id)) {
+    return undefined;
+  }
+
+  const [apartment] = await sql<Apartment[]>`
+  DELETE FROM
+    apartments
+  WHERE
+    id = ${id}
+  RETURNING *
+  `;
+  return apartment;
+});

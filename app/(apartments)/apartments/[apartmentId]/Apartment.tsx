@@ -3,6 +3,7 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { CheckIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import PieChart from '../../../../components/DoughnutChart';
 import StackedBarChart from '../../../../components/StackBarChart';
@@ -60,6 +61,7 @@ export default function ApartmentsPage(props: {
     props.apartmentOccupation,
   );
   const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
 
   const { loading, data, refetch } = useQuery(getApartmentById, {
     onCompleted: async () => {
@@ -109,9 +111,15 @@ export default function ApartmentsPage(props: {
             height="300"
             className="object-cover"
           />
-          <Link href={`apartments/${props.apartmentId}/Stats`}>
-            Update Data
-          </Link>
+          <button
+            className="btn btn-xs mt-5 btn-primary"
+            onClick={() => {
+              router.replace(`apartments/${props.apartmentId}/Stats`);
+              router.refresh();
+            }}
+          >
+            Update Report Data
+          </button>
         </div>
         {/* ----- APARTMENTS TABLE ----- */}
         <div className="col-span-2">
@@ -119,11 +127,6 @@ export default function ApartmentsPage(props: {
             <tbody className="divide-y divide-gray-100 border-t border-gray-100">
               <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
                 <th className="flex-1">Apartment: {data.apartments.name}</th>
-                <th>
-                  <button className="flex-none">
-                    <PencilSquareIcon className="w-5 h-5 text-primary" />
-                  </button>
-                </th>
               </tr>
 
               <tr className="px-6 py-4">
@@ -141,86 +144,80 @@ export default function ApartmentsPage(props: {
               {/* ----- UPDATE RENT ----- */}
               <tr className="px-6 py-4">
                 <td className="px-6 py-4">Rent:</td>
-                <td>
-                  <div className="flex items-center space-x-10">
-                    {!isEditing ? (
-                      <span>{newRent} ₱</span>
-                    ) : (
-                      <input
-                        value={rentOnEdit}
-                        onChange={(event) => {
-                          setRentOnEdit(parseInt(event.currentTarget.value));
-                        }}
-                      />
-                    )}
-                    {!isEditing ? (
-                      <button
-                        className="flex-none"
-                        onClick={() => {
-                          setIsEditing(true);
-                          setRentOnEdit(data.apartments.rent);
-                          setOccupiedOnEdit(data.apartments.occupied);
-                        }}
-                      >
-                        <PencilSquareIcon className="w-5 h-5 text-primary" />
-                      </button>
-                    ) : (
-                      <button
-                        className="flex-none"
-                        onClick={async () => {
-                          setIsEditing(false);
-                          await handleUpdateApartment();
-                        }}
-                      >
-                        <CheckIcon className="w-5 h-5 text-primary" />
-                      </button>
-                    )}
-                  </div>
+                <td className="flex items-center space-x-10">
+                  {!isEditing ? (
+                    <span className="flex-grow py-4">{newRent} ₱</span>
+                  ) : (
+                    <input
+                      value={rentOnEdit}
+                      onChange={(event) => {
+                        setRentOnEdit(parseInt(event.currentTarget.value));
+                      }}
+                    />
+                  )}
+                  {!isEditing ? (
+                    <button
+                      className="flex-none"
+                      onClick={() => {
+                        setIsEditing(true);
+                        setRentOnEdit(data.apartments.rent);
+                      }}
+                    >
+                      <PencilSquareIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  ) : (
+                    <button
+                      className="flex-none"
+                      onClick={async () => {
+                        setIsEditing(false);
+                        await handleUpdateApartment();
+                      }}
+                    >
+                      <CheckIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  )}
                 </td>
               </tr>
               {/* ----- UPDATE OCCUPANCY ----- */}
               <tr className="px-6 py-4">
                 <td className="px-6 py-4">Occupation:</td>
-                <td>
-                  <div className="flex items-center space-x-10">
-                    {!isEditing ? (
-                      data.apartments.occupied ? (
-                        <span>Occupied</span>
-                      ) : (
-                        <span>Available</span>
-                      )
+                <td className="flex items-center space-x-10">
+                  {!isEditing ? (
+                    data.apartments.occupied ? (
+                      <span className="flex-grow py-4">Occupied</span>
                     ) : (
-                      <input
-                        type="checkbox"
-                        checked={occupiedOnEdit}
-                        onChange={(event) => {
-                          setOccupiedOnEdit(event.currentTarget.checked);
-                        }}
-                      />
-                    )}
-                    {!isEditing ? (
-                      <button
-                        className="flex-none"
-                        onClick={() => {
-                          setIsEditing(true);
-                          setRentOnEdit(data.apartments.rent);
-                          setOccupiedOnEdit(data.apartments.occupied);
-                        }}
-                      >
-                        <PencilSquareIcon className="w-5 h-5 text-primary" />
-                      </button>
-                    ) : (
-                      <button
-                        className="flex-none"
-                        onClick={async () => {
-                          setIsEditing(false);
-                          await handleUpdateApartment();
-                        }}
-                      >
-                        <CheckIcon className="w-5 h-5 text-primary" />
-                      </button>
-                    )}
-                  </div>
+                      <span>Available</span>
+                    )
+                  ) : (
+                    <input
+                      type="checkbox"
+                      checked={occupiedOnEdit}
+                      onChange={(event) => {
+                        setOccupiedOnEdit(event.currentTarget.checked);
+                      }}
+                    />
+                  )}
+                  {!isEditing ? (
+                    <button
+                      className="flex-none"
+                      onClick={() => {
+                        setIsEditing(true);
+                        setOccupiedOnEdit(data.apartments.occupied);
+                      }}
+                    >
+                      <PencilSquareIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  ) : (
+                    <button
+                      className="flex-none"
+                      onClick={async () => {
+                        setIsEditing(false);
+                        await handleUpdateApartment();
+                      }}
+                    >
+                      <CheckIcon className="w-5 h-5 text-primary" />
+                    </button>
+                  )}
                 </td>
               </tr>
             </tbody>
@@ -233,11 +230,6 @@ export default function ApartmentsPage(props: {
               <tbody className="divide-y divide-gray-100 border-t border-gray-100">
                 <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
                   <th className="flex-1">Tenant</th>
-                  <th>
-                    <button className="flex-none">
-                      <PencilSquareIcon className="w-5 h-5 text-primary" />
-                    </button>
-                  </th>
                 </tr>
                 <tr className="px-6 py-4">
                   <td className="px-6 py-4">Name:</td>
@@ -259,9 +251,15 @@ export default function ApartmentsPage(props: {
             </table>
           </div>
         ) : (
-          <Link href={`apartments/${props.apartmentId}/createTenant`}>
-            Create Tenant
-          </Link>
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => {
+              router.replace(`/apartments/${props.apartmentId}/createTenant`);
+              router.refresh();
+            }}
+          >
+            Create New Tenant
+          </button>
         )}
       </div>
       {/* ----- DATA VISUALIZATION ----- */}
@@ -278,11 +276,6 @@ export default function ApartmentsPage(props: {
                 <tbody className="divide-y divide-gray-100 border-t border-gray-100">
                   <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
                     <th className="flex-1">Requests</th>
-                    <th>
-                      <button className="flex-none">
-                        <PencilSquareIcon className="w-5 h-5 text-primary" />
-                      </button>
-                    </th>
                   </tr>
                   {data.apartments.tenant.requests.map((request: Request) => {
                     const createdAt = parseInt(request.createdAt);

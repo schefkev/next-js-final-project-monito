@@ -31,6 +31,7 @@ import {
   getTenantsByUsername,
   getTenantsWithApartments,
   getTenantWithApartmentId,
+  updateTenantById,
 } from '../../database/tenants';
 import {
   createTenantSession,
@@ -77,6 +78,8 @@ type TenantInput = {
   apartmentId: number;
   avatar: string;
   since: string;
+  mail: string;
+  birthday: string;
 };
 type LoginArgument = {
   username?: string;
@@ -271,6 +274,7 @@ const typeDefs = gql`
     logout(token: String!): Token
     tenantLogout(token: String!): Token
     updateApartmentById(id: ID!, rent: Int, occupied: Boolean): Apartment
+    updateTenantById(id: ID!, mail: String, birthday: String): Tenant
   }
 `;
 
@@ -604,7 +608,30 @@ const resolvers = {
       return await deleteTenantSessionByToken(args.token);
     },
     updateApartmentById: async (parent: any, args: ApartmentInput) => {
+      if (
+        !args.rent ||
+        !args.occupied ||
+        typeof args.rent !== 'number' ||
+        typeof args.occupied !== 'boolean'
+      ) {
+        throw new GraphQLError('Required field missing');
+      }
       return await updateApartmentById(args.id, args.rent, args.occupied);
+    },
+    updateTenantById: async (parent: any, args: TenantInput) => {
+      if (
+        !args.mail ||
+        !args.birthday ||
+        typeof args.mail !== 'string' ||
+        typeof args.birthday !== 'string'
+      ) {
+        throw new GraphQLError('Required field missing');
+      }
+      return await updateTenantById(
+        parseInt(args.id),
+        args.mail,
+        args.birthday,
+      );
     },
   },
 };
