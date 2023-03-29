@@ -30,34 +30,9 @@ export type Apartment = {
   };
 };
 
-/* ----- GET THE APARTMENT BY ITS ID ----- !!*/
+/* ----- GET THE APARTMENT BY ITS ID ----- */
 export const getApartmentById = cache(async (id: number) => {
-  const [apartment] = await sql<
-    {
-      id: number;
-      tenantId: number;
-      name: string;
-      address: string;
-      city: string;
-      unit: string;
-      zip: string;
-      rent: number;
-      occupied: boolean;
-      image: string;
-      tenant: {
-        id: number;
-        username: string;
-        avatar: string;
-        requests: {
-          length: number;
-          id: number;
-          message: string;
-          picture: string;
-        };
-      };
-      requests: { id: number; message: string; picture: string };
-    }[]
-  >`
+  const [apartment] = await sql<Apartment[]>`
     SELECT
       *
     FROM
@@ -68,34 +43,9 @@ export const getApartmentById = cache(async (id: number) => {
   return apartment;
 });
 
-/* ----- GET ALL THE APARTMENTS ----- !!*/
+/* ----- GET ALL THE APARTMENTS ----- */
 export const getApartments = cache(async () => {
-  const apartments = await sql<
-    {
-      id: number;
-      tenantId: number;
-      name: string;
-      address: string;
-      city: string;
-      unit: string;
-      zip: string;
-      rent: number;
-      occupied: boolean;
-      image: string;
-      tenant: {
-        id: number;
-        username: string;
-        avatar: string;
-        requests: {
-          length: number;
-          id: number;
-          message: string;
-          picture: string;
-        };
-      };
-      requests: { id: number; message: string; picture: string };
-    }[]
-  >`
+  const apartments = await sql<Apartment[]>`
     SELECT * FROM apartments
   `;
   return apartments;
@@ -126,18 +76,6 @@ export const createApartment = cache(
         rent: number;
         occupied: boolean;
         image: string;
-        tenant: {
-          id: number;
-          username: string;
-          avatar: string;
-          requests: {
-            length: number;
-            id: number;
-            message: string;
-            picture: string;
-          };
-        };
-        requests: { id: number; message: string; picture: string };
       }[]
     >`
     INSERT INTO apartments
@@ -161,32 +99,7 @@ export const createApartment = cache(
 
 /* ----- GET THE APARTMENT WITH THE USER-ID ----- */
 export const getApartmentByUserId = cache(async (userId: number) => {
-  const userApartment = await sql<
-    {
-      id: number;
-      tenantId: number;
-      name: string;
-      address: string;
-      city: string;
-      unit: string;
-      zip: string;
-      rent: number;
-      occupied: boolean;
-      image: string;
-      tenant: {
-        id: number;
-        username: string;
-        avatar: string;
-        requests: {
-          length: number;
-          id: number;
-          message: string;
-          picture: string;
-        };
-      };
-      requests: { id: number; message: string; picture: string };
-    }[]
-  >`
+  const userApartment = await sql<Apartment[]>`
     SELECT
       *
     FROM
@@ -199,32 +112,7 @@ export const getApartmentByUserId = cache(async (userId: number) => {
 
 /* ----- GET THE APARTMENT WITH THE TENANT-ID ----- */
 export const getApartmentByTenantId = cache(async (tenantId: number) => {
-  const tenantApartment = await sql<
-    {
-      id: number;
-      tenantId: number;
-      name: string;
-      address: string;
-      city: string;
-      unit: string;
-      zip: string;
-      rent: number;
-      occupied: boolean;
-      image: string;
-      tenant: {
-        id: number;
-        username: string;
-        avatar: string;
-        requests: {
-          length: number;
-          id: number;
-          message: string;
-          picture: string;
-        };
-      };
-      requests: { id: number; message: string; picture: string };
-    }[]
-  >`
+  const tenantApartment = await sql<Apartment[]>`
   SELECT
   *
   FROM
@@ -242,32 +130,7 @@ export const updateApartmentWithTenantId = cache(
       return undefined;
     }
 
-    const [apartment] = await sql<
-      {
-        id: number;
-        tenantId: number;
-        name: string;
-        address: string;
-        city: string;
-        unit: string;
-        zip: string;
-        rent: number;
-        occupied: boolean;
-        image: string;
-        tenant: {
-          id: number;
-          username: string;
-          avatar: string;
-          requests: {
-            length: number;
-            id: number;
-            message: string;
-            picture: string;
-          };
-        };
-        requests: { id: number; message: string; picture: string };
-      }[]
-    >`
+    const [apartment] = await sql<Apartment[]>`
     UPDATE
       apartments
     SET
@@ -287,32 +150,7 @@ export const updateApartmentById = cache(
       return undefined;
     }
 
-    const [apartment] = await sql<
-      {
-        id: number;
-        tenantId: number;
-        name: string;
-        address: string;
-        city: string;
-        unit: string;
-        zip: string;
-        rent: number;
-        occupied: boolean;
-        image: string;
-        tenant: {
-          id: number;
-          username: string;
-          avatar: string;
-          requests: {
-            length: number;
-            id: number;
-            message: string;
-            picture: string;
-          };
-        };
-        requests: { id: number; message: string; picture: string };
-      }[]
-    >`
+    const [apartment] = await sql<Apartment[]>`
   UPDATE
     apartments
   SET
@@ -332,32 +170,7 @@ export const deleteApartmentById = cache(async (id: number) => {
     return undefined;
   }
 
-  const [apartment] = await sql<
-    {
-      id: number;
-      tenantId: number;
-      name: string;
-      address: string;
-      city: string;
-      unit: string;
-      zip: string;
-      rent: number;
-      occupied: boolean;
-      image: string;
-      tenant: {
-        id: number;
-        username: string;
-        avatar: string;
-        requests: {
-          length: number;
-          id: number;
-          message: string;
-          picture: string;
-        };
-      };
-      requests: { id: number; message: string; picture: string };
-    }[]
-  >`
+  const [apartment] = await sql<Apartment[]>`
   DELETE FROM
     apartments
   WHERE
