@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-import { cookies } from 'next/headers';
 import ApartmentsPage from '../../(apartments)/apartments/ApartmentByUserId';
 import NavBar from '../../../components/Navbar';
 import { initializeApollo } from '../../../utils/graphql';
