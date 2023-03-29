@@ -5,7 +5,10 @@ export async function up(sql) {
     tenant_id integer REFERENCES tenants(id) ON DELETE CASCADE,
     message text,
     picture text,
-    created_at timestamp NOT NULL DEFAULT NOW()
+    created_at timestamp NOT NULL DEFAULT NOW(),
+    apartment_id integer REFERENCES apartments(id) ON DELETE CASCADE,
+    comment text,
+    status boolean DEFAULT FALSE
   )`;
 }
 
