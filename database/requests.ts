@@ -8,6 +8,8 @@ export type Request = {
   picture: string;
   createdAt: string;
   apartmentId: number;
+  comment: string;
+  status: boolean;
 };
 
 /* ----- GET ALL THE REQUESTS ----- */

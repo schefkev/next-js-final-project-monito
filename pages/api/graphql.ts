@@ -101,6 +101,8 @@ type RequestInput = {
   message: string;
   picture: string;
   apartmentId: number;
+  comment: string;
+  status: boolean;
 };
 
 type StatsInput = {
@@ -176,6 +178,8 @@ const typeDefs = gql`
     tenant: Tenant
     apartmentId: ID
     apartment: Apartment
+    comment: String
+    status: Boolean
   }
 
   type Stats {

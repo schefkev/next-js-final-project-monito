@@ -18,10 +18,6 @@ export type Apartment = {
     avatar: string;
     requests: {
       length: number;
-      /*  length(arg0: string, length: any): import('react').ReactNode;
-      map(
-        arg0: (request: import('./requests').Request) => JSX.Element,
-      ): import('react').ReactNode; */
       id: number;
       message: string;
       picture: string;
