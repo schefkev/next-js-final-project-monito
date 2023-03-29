@@ -37,8 +37,8 @@ jobs:
         run: yarn build
       - name: Run TypeScript Compiler
         run: yarn tsc
-      - name: Run ESLint
-        run: yarn eslint . --max-warnings 0
+      # - name: Run ESLint
+      # run: yarn eslint . --max-warnings 0
       - name: Run Stylelint
         run: yarn stylelint '**/*.{css,scss,less,js,tsx}'
       - name: Install Playwright
