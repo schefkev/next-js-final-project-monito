@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Logo from '../../../public/logo1.svg';
-import { getSafeReturnToPath } from '../../../utils/validation';
 
 const loginMutation = gql`
   mutation Login($username: String!, $password: String!) {
@@ -17,9 +16,7 @@ const loginMutation = gql`
   }
 `;
 
-export default function TenantLoginForm(props: {
-  returnTo?: string | string[];
-}) {
+export default function TenantLoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [onError, setOnError] = useState('');
@@ -35,20 +32,14 @@ export default function TenantLoginForm(props: {
       setOnError(error.message);
     },
 
-    onCompleted: (data) => {
-      const returnTo = getSafeReturnToPath(props.returnTo);
-      if (returnTo) {
-        router.push(returnTo);
-        return;
-      }
-      router.replace(`/tenantProfile/${data.tenantLogin.id}`);
+    onCompleted: () => {
       router.refresh();
     },
   });
 
   return (
     <div>
-      {/* Header */}
+      {/* ----- HEADER ----- */}
       <header className="navbar bg-primary-focus">
         <div className="flex-1 ml-6">
           <Link href="/">
@@ -56,7 +47,7 @@ export default function TenantLoginForm(props: {
           </Link>
         </div>
       </header>
-      {/* Registration Form */}
+      {/* ----- LOGIN FORM ----- */}
       <div className="flex flex-col gap-4 justify-content items-center h-screen mt-16">
         <div className="form-control">
           <label className="input-group input-group-md">

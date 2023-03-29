@@ -6,6 +6,11 @@ import TenantForm from './TenantForm';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Create Tenant',
+  description: 'Create your Tenant and assign him to the assigned apartment.',
+};
+
 type Props = {
   params: {
     apartmentId: string;
@@ -42,9 +47,6 @@ export default async function StatisticsPage(props: Props) {
       apartmentsId: props.params.apartmentId,
     },
   });
-
-  console.log('User:', userData);
-  console.log('Apartment:', aptData);
 
   return (
     <ApolloClientProvider initialApolloState={JSON.stringify([])}>

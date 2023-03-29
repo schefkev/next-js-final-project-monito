@@ -1,5 +1,6 @@
 'use client';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Chart from 'chart.js/auto';
 import { Bar } from 'react-chartjs-2';
 

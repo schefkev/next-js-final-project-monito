@@ -12,6 +12,12 @@ import Service from '../public/images/Service.png';
 import Logo from '../public/logo1.svg';
 import { initializeApollo } from '../utils/graphql';
 
+export const metadata = {
+  title: 'Home',
+  description:
+    'The ultimate all-in-one property management solution application',
+};
+
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {

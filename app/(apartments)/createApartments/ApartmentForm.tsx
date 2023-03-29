@@ -72,7 +72,7 @@ export default function ApartmentForm(props: { userId: number }) {
 
   return (
     <div>
-      {/* Header */}
+      {/* ----- HEADER ----- */}
       <header className="navbar bg-secondary h-20">
         <div className="flex-1 ml-6">
           <Link href="/">
@@ -89,8 +89,7 @@ export default function ApartmentForm(props: { userId: number }) {
           <label className="input-group input-group-md">
             <span className="w-28">Name</span>
             <input
-              type="text"
-              placeholder="Type here"
+              placeholder="Apartment Name"
               className="input input-bordered input-md"
               value={name}
               onChange={(event) => {
@@ -104,8 +103,7 @@ export default function ApartmentForm(props: { userId: number }) {
           <label className="input-group input-group-md">
             <span className="w-28">Address</span>
             <input
-              type="text"
-              placeholder="Password here"
+              placeholder="Apartment Address"
               className="input input-bordered input-md"
               value={address}
               onChange={(event) => {
@@ -119,8 +117,7 @@ export default function ApartmentForm(props: { userId: number }) {
           <label className="input-group input-group-md">
             <span className="w-28">City</span>
             <input
-              type="text"
-              placeholder="Password here"
+              placeholder="Apartment City"
               className="input input-bordered input-md"
               value={city}
               onChange={(event) => {
@@ -134,8 +131,7 @@ export default function ApartmentForm(props: { userId: number }) {
           <label className="input-group input-group-md">
             <span className="w-28">Unit</span>
             <input
-              type="text"
-              placeholder="Password here"
+              placeholder="Apartment Unit"
               className="input input-bordered input-md"
               value={unit}
               onChange={(event) => {
@@ -149,8 +145,7 @@ export default function ApartmentForm(props: { userId: number }) {
           <label className="input-group input-group-md">
             <span className="w-28">Zip Code</span>
             <input
-              type="text"
-              placeholder="Password here"
+              placeholder="Apartment Zip"
               className="input input-bordered input-md"
               value={zip}
               onChange={(event) => {
@@ -165,7 +160,7 @@ export default function ApartmentForm(props: { userId: number }) {
             <span className="w-28">Rental Price</span>
             <input
               // type="number"
-              placeholder="Password here"
+              placeholder="Apartment Rent"
               className="input input-bordered input-md"
               value={rent}
               onChange={(event) => {
@@ -180,7 +175,6 @@ export default function ApartmentForm(props: { userId: number }) {
             <span className="w-28">Occupation</span>
             <input
               type="checkbox"
-              placeholder="Password here"
               className="input input-bordered input-md"
               checked={occupied}
               onChange={(event) => {
@@ -194,7 +188,6 @@ export default function ApartmentForm(props: { userId: number }) {
           <label className="input-group input-group-md">
             <span className="w-28">Pictures</span>
             <input
-              type="text"
               placeholder="Upload Avatar here"
               className="input input-bordered input-md"
               value={image}

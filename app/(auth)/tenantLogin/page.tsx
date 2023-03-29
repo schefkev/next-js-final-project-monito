@@ -5,17 +5,20 @@ import { initializeApollo } from '../../../utils/graphql';
 import ApolloClientProvider from '../../ApolloClientProvider';
 import TenantLoginForm from './TenantLoginForm';
 
-type Props = { searchParams: { returnTo?: string | string[] } };
+export const metadata = {
+  title: 'Login',
+  description: 'Login to Monito, your one-in-all monitoring app',
+};
 
-export default async function page(props: Props) {
+export default async function LoginPage() {
   const client = initializeApollo(null);
   const nextCookies = cookies();
   const sessionToken = nextCookies.get('sessionToken');
 
-  const { data } = await client.query({
+  const { data, loading } = await client.query({
     query: gql`
       query GetLoggedInUser($username: String) {
-        getLoggedInUser(username: $username) {
+        getLoggedInTenant(username: $username) {
           id
         }
       }
@@ -24,9 +27,16 @@ export default async function page(props: Props) {
       username: sessionToken?.value,
     },
   });
+
+  if (loading) return <button className="btn loading">loading</button>;
+
+  if (data.getLoggedInTenant) {
+    redirect(`/tenantProfile/${data.getLoggedInTenant.id}`);
+  }
+
   return (
     <ApolloClientProvider initialApolloState={JSON.stringify([])}>
-      <TenantLoginForm returnTo={props.searchParams.returnTo} />
+      <TenantLoginForm />
     </ApolloClientProvider>
   );
 }

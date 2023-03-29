@@ -39,9 +39,6 @@ export default function NavBar(props: Props) {
               <Link href="/createApartments">Create Apartment</Link>
             </li>
             <li>
-              <Link href="/createTenants">Create Tenant</Link>
-            </li>
-            <li>
               <Link
                 className="flex-none mr-6 text-success"
                 href="/logout"

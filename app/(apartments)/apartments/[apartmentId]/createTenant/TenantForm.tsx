@@ -6,13 +6,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import Logo from '../../../../../public/logo1.svg';
 
-export type ApartmentResponse = {
-  id: number;
-  username: string;
-  password: string;
-  avatar: string;
-};
-
 const createTenant = gql`
   mutation CreateTenant(
     $username: String!
@@ -64,7 +57,7 @@ export default function TenantForm(props: {
 
   return (
     <div>
-      {/* Header */}
+      {/* ----- HEADER ----- */}
       <header className="navbar bg-secondary h-20">
         <div className="flex-1 ml-6">
           <Link href="/">
@@ -76,12 +69,11 @@ export default function TenantForm(props: {
         </div>
       </header>
       <div className="flex flex-col gap-2 justify-center items-center h-screen">
-        {/* ----- Create Username  ----- */}
+        {/* ----- CREATE USERNAME  ----- */}
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Name</span>
             <input
-              // type="number"
               placeholder="Name here"
               className="input input-bordered input-md"
               value={username}
@@ -91,12 +83,11 @@ export default function TenantForm(props: {
             />
           </label>
         </div>
-        {/* ----- Create User Password  ----- */}
+        {/* ----- CREATE USER PASSWORD  ----- */}
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Password</span>
             <input
-              // type="number"
               placeholder="Password here"
               className="input input-bordered input-md"
               value={password}
@@ -106,12 +97,11 @@ export default function TenantForm(props: {
             />
           </label>
         </div>
-        {/* ----- Create User Avatar  ----- */}
+        {/* ----- CREATE USER AVATAR  ----- */}
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Avatar</span>
             <input
-              // type="number"
               placeholder="Avatar here"
               className="input input-bordered input-md"
               value={avatar}
@@ -121,12 +111,11 @@ export default function TenantForm(props: {
             />
           </label>
         </div>
-        {/* ----- Create User Since ----- */}
+        {/* ----- CREATE USER SINCE ----- */}
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Since</span>
             <input
-              // type="text"
               placeholder="Tenant since"
               className="input input-bordered input-md"
               value={since}
@@ -136,12 +125,12 @@ export default function TenantForm(props: {
             />
           </label>
         </div>
-        {/* ----- Add Button ----- */}
+        {/* ----- CREATE BUTTON ----- */}
         <button
           onClick={async () => await handleCreateTenant()}
           className="btn btn-primary"
         >
-          Update Stats
+          Create Tenant
         </button>
         <div className="error">{onError}</div>
       </div>

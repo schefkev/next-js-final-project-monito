@@ -3,7 +3,7 @@
 import { gql, useMutation } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Logo from '../../../public/logo1.svg';
 import { getSafeReturnToPath } from '../../../utils/validation';
@@ -43,7 +43,7 @@ export default function RegistrationForm(props: {
     onError: (error) => {
       setOnError(error.message);
     },
-    onCompleted: (data) => {
+    onCompleted: () => {
       const returnTo = getSafeReturnToPath(props.returnTo);
       if (returnTo) {
         router.push(returnTo);
@@ -56,7 +56,7 @@ export default function RegistrationForm(props: {
 
   return (
     <div>
-      {/* Header */}
+      {/* ----- HEADER ----- */}
       <header className="navbar bg-primary-focus">
         <div className="flex-1 ml-6">
           <Link href="/">
@@ -64,14 +64,13 @@ export default function RegistrationForm(props: {
           </Link>
         </div>
       </header>
-      {/* ----- Create User Name ----- */}
+      {/* ----- CREATE USER NAME ----- */}
       <div className="flex flex-col gap-4 justify-content items-center h-screen mt-16">
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Name</span>
             <input
-              type="text"
-              placeholder="Type here"
+              placeholder="Please enter username"
               className="input input-bordered input-md"
               value={username}
               onChange={(event) => {
@@ -80,13 +79,12 @@ export default function RegistrationForm(props: {
             />
           </label>
         </div>
-        {/* ----- Create User Password ----- */}
+        {/* ----- CREATE USER PASSWORD ----- */}
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Password</span>
             <input
-              type="text"
-              placeholder="Password here"
+              placeholder="Please enter password"
               className="input input-bordered input-md"
               value={password}
               onChange={(event) => {
@@ -95,12 +93,11 @@ export default function RegistrationForm(props: {
             />
           </label>
         </div>
-        {/* ----- Create User Avatar ----- */}
+        {/* ----- CREATE USER AVATAR ----- */}
         <div className="form-control">
           <label className="input-group input-group-md">
             <span className="w-28">Avatar</span>
             <input
-              type="text"
               placeholder="Upload Avatar here"
               className="input input-bordered input-md"
               value={avatar}

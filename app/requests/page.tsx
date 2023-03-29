@@ -6,6 +6,12 @@ import RequestsForm from './RequestsForm';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Request',
+  description:
+    'Create a request for your apartment and send it to the landlord.',
+};
+
 export default async function RequestsPage() {
   const client = initializeApollo(null);
   const nextCookies = cookies();

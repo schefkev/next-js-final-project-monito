@@ -10,6 +10,30 @@ type Props = {
     apartmentId: string;
   };
 };
+
+export async function generateMetadata(props: Props) {
+  const client = initializeApollo(null);
+
+  const { data } = await client.query({
+    query: gql`
+      query Query($apartmentsId: ID!) {
+        apartments(id: $apartmentsId) {
+          id
+          name
+        }
+      }
+    `,
+    variables: {
+      apartmentsId: props.params.apartmentId,
+    },
+  });
+
+  return {
+    title: `Dashboard - ${data.apartments.name}`,
+    description: `${data.apartments.name}'s Dashboard`,
+  };
+}
+
 export default async function ApartmentByIdPage(props: Props) {
   const client = initializeApollo(null);
 

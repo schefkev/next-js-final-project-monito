@@ -1,6 +1,16 @@
 import './globals.css';
 import Footer from '../components/footer';
 
+export const metadata = {
+  title: {
+    default: 'Monito',
+    template: 'Monito | %s',
+  },
+  icons: {
+    shortcut: '/icon.svg',
+  },
+};
+
 export default function RootLayout({
   children,
 }: {

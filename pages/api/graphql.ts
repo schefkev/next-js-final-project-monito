@@ -12,7 +12,6 @@ import {
   getApartmentByUserId,
   getApartments,
   updateApartmentById,
-  updateApartmentWithTenantId,
 } from '../../database/apartments';
 import {
   createRequest,
@@ -29,7 +28,6 @@ import {
   getTenants,
   getTenantsById,
   getTenantsByUsername,
-  getTenantsWithApartments,
   getTenantWithApartmentId,
   updateTenantById,
 } from '../../database/tenants';
@@ -43,8 +41,6 @@ import {
   getUserBySessionToken,
   getUserByUsername,
   getUserByUsernameWithPasswordHash,
-  getUsers,
-  getUserWithApartments,
 } from '../../database/users';
 import { createSerializedRegisterSessionTokenCookie } from '../../utils/cookies';
 import { createCsrfSecret } from '../../utils/csrf';

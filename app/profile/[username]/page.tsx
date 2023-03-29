@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { cookies } from 'next/headers';
 import ApartmentsPage from '../../(apartments)/apartments/ApartmentByUserId';
 import NavBar from '../../../components/Navbar';
 import { initializeApollo } from '../../../utils/graphql';
@@ -7,6 +8,27 @@ import ApolloClientProvider from '../../ApolloClientProvider';
 type Props = {
   params: { username: string };
 };
+
+export async function generateMetadata({ params }: Props) {
+  const client = initializeApollo(null);
+  const userId = params.username;
+  const { data } = await client.query({
+    query: gql`
+      query GetUserById($id: ID! = ${userId}) {
+        user(id: $id) {
+          id
+          username
+          avatar
+        }
+      }
+    `,
+  });
+
+  return {
+    title: data.user.username,
+    description: `${data.user.username}'s user profile`,
+  };
+}
 
 export default async function UserProfile({ params }: Props) {
   const client = initializeApollo(null);

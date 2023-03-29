@@ -8,6 +8,25 @@ type Props = {
   params: { username: string };
 };
 
+export async function generateMetadata({ params }: Props) {
+  const client = initializeApollo(null);
+  const userId = params.username;
+  const { data } = await client.query({
+    query: gql`
+      query GetTenantsById($id: ID! = ${userId}) {
+        tenant(id: $id) {
+          username
+        }
+      }
+    `,
+  });
+
+  return {
+    title: data.tenant.username,
+    description: `${data.tenant.username}'s user profile`,
+  };
+}
+
 export default async function UserProfile({ params }: Props) {
   const client = initializeApollo(null);
   const userId = params.username;

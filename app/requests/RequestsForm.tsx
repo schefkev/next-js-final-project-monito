@@ -91,7 +91,6 @@ export default function RequestsForm(props: {
           <label className="input-group input-group-md">
             <span className="w-28">Picture</span>
             <input
-              type="text"
               placeholder="Upload Avatar here"
               className="input input-bordered input-md"
               value={picture}
@@ -101,12 +100,12 @@ export default function RequestsForm(props: {
             />
           </label>
         </div>
-        {/* ----- Add Button ----- */}
+        {/* ----- REQUEST BUTTON ----- */}
         <button
           onClick={async () => await handleCreateRequest()}
           className="btn btn-primary"
         >
-          Get Started
+          Send Request
         </button>
         <div className="error">{onError}</div>
       </div>

@@ -6,6 +6,12 @@ import StatisticsForm from './Stats';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Update Stats',
+  description:
+    'Update your apartment statistics to have a good understanding of the cash-flow.',
+};
+
 type Props = {
   params: {
     apartmentId: string;

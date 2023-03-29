@@ -6,6 +6,11 @@ import ApartmentForm from './ApartmentForm';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Create Apartment',
+  description: 'Create your Apartment and assign a Tenant to the apartment.',
+};
+
 export default async function CreateApartmentPage() {
   const client = initializeApollo(null);
   const nextCookies = cookies();
