@@ -8,6 +8,9 @@ export type User = {
   avatar: string;
 };
 
+/* Expected: { id: number; userId: number; name: string; }[]`
+	Actual: { id: number; userId: number | null; name: string; }[]  */
+
 /* ----- GET THE USER BY THE SESSION TOKEN */
 export const getUserBySessionToken = cache(async (token: string) => {
   const [user] = await sql<
