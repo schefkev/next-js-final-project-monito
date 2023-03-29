@@ -8,12 +8,12 @@ const nextConfig = {
     return config;
   },
 
-  /* eslint: {
+  eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
-  }, */
+  },
   images: {
     remotePatterns: [
       {

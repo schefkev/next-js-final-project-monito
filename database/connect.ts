@@ -1,8 +1,9 @@
 import { config } from 'dotenv-safe';
 import postgres from 'postgres';
 
-config();
+if (!process.env.FLY_IO) config();
 
+// Type needed for the connection function below
 declare module globalThis {
   let postgresSqlClient: ReturnType<typeof postgres> | undefined;
 }
