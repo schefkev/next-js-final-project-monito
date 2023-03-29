@@ -56,13 +56,13 @@ export default function ApartmentsPage(props: { userId: number }) {
           {data?.apartmentByUserId.map((apartment: Apartment) => {
             return (
               <div key={`apartment-${apartment.id}`}>
-                <div className="card lg:card-side bg-base-100 shadow-xl m-8 h-60">
+                <div className="card lg:card-side bg-base-100 shadow-xl m-8 h-60 sm:flex sm:flex-row">
                   <Image
                     src={apartment.image}
                     alt="Apartment Name"
                     width="300"
                     height="300"
-                    className="object-cover"
+                    className="object-cover md:object-scale-down"
                   />
                   <div className="card-body">
                     <Link href={`apartments/${apartment.id}`}>
