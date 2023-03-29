@@ -21,7 +21,7 @@ jobs:
           sudo -u postgres psql --command="CREATE USER final_project_monito PASSWORD 'final_project_monito'" --command="\du"
       - name: Create database and allow user
         run: |
-          sudo -u postgres createdb --owner=next_js_example_winter_2023 next_js_example_winter_2023
+          sudo -u postgres createdb --owner=final_project_monito final_project_monito
       - uses: actions/checkout@v3
       # Use the official setup-node action (sets up Node.js):
       # https://github.com/actions/setup-node
