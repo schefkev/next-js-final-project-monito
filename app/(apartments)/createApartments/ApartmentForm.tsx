@@ -3,6 +3,7 @@
 import { gql, useMutation } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Logo from '../../../public/logo1.svg';
 
@@ -52,6 +53,7 @@ export default function ApartmentForm(props: { userId: number }) {
   const [occupied, setOccupied] = useState(false);
   const [image, setImage] = useState('');
   const [onError, setOnError] = useState('');
+  const router = useRouter();
 
   const [handleCreateApartment] = useMutation(createApartment, {
     variables: {
@@ -67,6 +69,10 @@ export default function ApartmentForm(props: { userId: number }) {
     },
     onError: (error) => {
       setOnError(error.message);
+    },
+    onCompleted: () => {
+      router.replace(`/profile/${props.userId}`);
+      router.refresh();
     },
   });
 

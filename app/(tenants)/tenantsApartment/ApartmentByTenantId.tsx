@@ -3,7 +3,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { CheckIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import StackedBarChartTenant from '../../../components/StackBarChartTenant';
 import { Request } from '../../../database/requests';
@@ -43,6 +43,8 @@ const getTenantWithApartment = gql`
       requests {
         message
         createdAt
+        status
+        comment
       }
     }
   }
@@ -90,8 +92,8 @@ export default function TenantApartmentsPage(props: { userId: number }) {
           <button
             className="btn btn-xs btn-primary mt-5"
             onClick={() => {
-              router.replace(`/requests`);
               router.refresh();
+              router.replace(`/requests`);
             }}
           >
             Create New Request
@@ -249,11 +251,31 @@ export default function TenantApartmentsPage(props: { userId: number }) {
                 }.${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()}`;
                 return (
                   <div key={`request-${request.id}`}>
-                    <tr className="px-6 py-4">
-                      <td className="px-6 py-4">Created: {dateString}</td>
+                    <tr className="px-6 py-2 flex flex-row">
+                      <td className="basis-1/2">Created: {dateString}</td>
+                      <td className="basis-1/2 flex justify-center items-center space-x-10 pl-16">
+                        {request.status ? (
+                          <span className="badge badge-success badge-sm">
+                            Closed
+                          </span>
+                        ) : (
+                          <span className=" badge badge-error badge-sm">
+                            In Progress
+                          </span>
+                        )}
+                      </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4">{request.message}</td>
+                      <td className="px-6 py-4">You: {request.message}</td>
+                    </tr>
+                    <tr>
+                      {request.comment ? (
+                        <span className="px-6 py-4">
+                          Landlord: {request.comment}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
                     </tr>
                   </div>
                 );

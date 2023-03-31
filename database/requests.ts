@@ -10,6 +10,7 @@ export type Request = {
   apartmentId: number;
   comment: string;
   status: boolean;
+  filter(arg0: (request: any) => any): unknown;
 };
 
 /* ----- GET ALL THE REQUESTS ----- */
@@ -72,6 +73,38 @@ export const createRequest = cache(
       message,
       picture
     `;
+    return request;
+  },
+);
+
+/* ----- UPDATE THE REQUEST COMMENT WITH ITS ID ----- */
+export const updateRequestComment = cache(
+  async (id: number, comment: string) => {
+    const [request] = await sql<Request[]>`
+  UPDATE
+    requests
+  SET
+    comment = ${comment}
+  WHERE
+    id = ${id}
+  RETURNING *
+  `;
+    return request;
+  },
+);
+
+/* ----- UPDATE THE REQUEST STATUS WITH ITS ID ----- */
+export const updateRequestStatus = cache(
+  async (id: number, status: boolean) => {
+    const [request] = await sql<Request[]>`
+  UPDATE
+    requests
+  SET
+    status = ${status}
+  WHERE
+    id = ${id}
+    RETURNING *
+  `;
     return request;
   },
 );

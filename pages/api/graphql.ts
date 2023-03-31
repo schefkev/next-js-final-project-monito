@@ -11,12 +11,15 @@ import {
   getApartmentByTenantId,
   getApartmentByUserId,
   getApartments,
-  updateApartmentById,
+  updateApartmentOccupancyById,
+  updateApartmentRentById,
 } from '../../database/apartments';
 import {
   createRequest,
   getRequestByTenantId,
   getRequests,
+  updateRequestComment,
+  updateRequestStatus,
 } from '../../database/requests';
 import { createSession, deleteSessionByToken } from '../../database/sessions';
 import { createStats } from '../../database/stats';
@@ -96,7 +99,7 @@ type UserAuthenticationContext = {
 };
 
 type RequestInput = {
-  id: string;
+  id: number;
   tenantId: number;
   message: string;
   picture: string;
@@ -273,8 +276,11 @@ const typeDefs = gql`
     ): Stats
     logout(token: String!): Token
     tenantLogout(token: String!): Token
-    updateApartmentById(id: ID!, rent: Int, occupied: Boolean): Apartment
+    updateApartmentRentById(id: ID!, rent: Int): Apartment
+    updateApartmentOccupancyById(id: ID!, occupied: Boolean): Apartment
     updateTenantById(id: ID!, mail: String, birthday: String): Tenant
+    updateRequestCommentById(id: ID!, comment: String): Request
+    updateRequestStatusById(id: ID!, status: Boolean): Request
   }
 `;
 
@@ -607,16 +613,20 @@ const resolvers = {
     tenantLogout: async (parent: string, args: Token) => {
       return await deleteTenantSessionByToken(args.token);
     },
-    updateApartmentById: async (parent: any, args: ApartmentInput) => {
-      if (
-        !args.rent ||
-        !args.occupied ||
-        typeof args.rent !== 'number' ||
-        typeof args.occupied !== 'boolean'
-      ) {
+    updateApartmentRentById: async (parent: any, args: ApartmentInput) => {
+      if (!args.rent || typeof args.rent !== 'number') {
         throw new GraphQLError('Required field missing');
       }
-      return await updateApartmentById(args.id, args.rent, args.occupied);
+      return await updateApartmentRentById(args.id, args.rent);
+    },
+    updateApartmentOccupancyById: async (parent: any, args: ApartmentInput) => {
+      if (!args.occupied || typeof args.occupied !== 'boolean') {
+        args.occupied = Boolean(args.occupied);
+        if (typeof args.occupied !== 'boolean') {
+          throw new GraphQLError('Invalid value for this field');
+        }
+      }
+      return await updateApartmentOccupancyById(args.id, args.occupied);
     },
     updateTenantById: async (parent: any, args: TenantInput) => {
       if (
@@ -632,6 +642,21 @@ const resolvers = {
         args.mail,
         args.birthday,
       );
+    },
+    updateRequestCommentById: async (parent: any, args: RequestInput) => {
+      if (!args.comment || typeof args.comment !== 'string') {
+        throw new GraphQLError('Required field missing');
+      }
+      return await updateRequestComment(args.id, args.comment);
+    },
+    updateRequestStatusById: async (parent: any, args: RequestInput) => {
+      if (!args.status || typeof args.status !== 'boolean') {
+        args.status = Boolean(args.status);
+        if (typeof args.status !== 'boolean') {
+          throw new GraphQLError('Invalid value for this field');
+        }
+      }
+      return await updateRequestStatus(args.id, args.status);
     },
   },
 };

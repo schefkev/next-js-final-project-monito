@@ -10,16 +10,38 @@ import StackedBarChart from '../../../../components/StackBarChart';
 import { Request } from '../../../../database/requests';
 import Logo from '../../../../public/logo1.svg';
 
-const updateApartmentById = gql`
-  mutation updateApartmentById(
-    $id: ID!
-    $rentOnEdit: Int
-    $occupiedOnEdit: Boolean
-  ) {
-    updateApartmentById(id: $id, rent: $rentOnEdit, occupied: $occupiedOnEdit) {
+const updateApartmentRentById = gql`
+  mutation updateApartmentRentById($id: ID!, $rentOnEdit: Int) {
+    updateApartmentRentById(id: $id, rent: $rentOnEdit) {
       id
       rent
+    }
+  }
+`;
+
+const updateApartmentOccupancyById = gql`
+  mutation updateApartmentOccupancyById($id: ID!, $occupiedOnEdit: Boolean) {
+    updateApartmentOccupancyById(id: $id, occupied: $occupiedOnEdit) {
+      id
       occupied
+    }
+  }
+`;
+
+const updateRequestCommentById = gql`
+  mutation updateRequestCommentById($id: ID!, $commentOnEdit: String) {
+    updateRequestCommentById(id: $id, comment: $commentOnEdit) {
+      id
+      comment
+    }
+  }
+`;
+
+const updateRequestStatusById = gql`
+  mutation updateRequestStatusById($id: ID!, $statusOnEdit: Boolean) {
+    updateRequestStatusById(id: $id, status: $statusOnEdit) {
+      id
+      status
     }
   }
 `;
@@ -43,9 +65,12 @@ const getApartmentById = gql`
         mail
         birthday
         requests {
+          id
           message
           picture
           createdAt
+          comment
+          status
         }
       }
     }
@@ -56,25 +81,69 @@ export default function ApartmentsPage(props: {
   apartmentId: number;
   apartmentOccupation: boolean;
 }) {
-  const [rentOnEdit, setRentOnEdit] = useState<number>();
-  const [occupiedOnEdit, setOccupiedOnEdit] = useState(
-    props.apartmentOccupation,
-  );
-  const [isEditing, setIsEditing] = useState(false);
-  const router = useRouter();
-
   const { loading, data, refetch } = useQuery(getApartmentById, {
     onCompleted: async () => {
       await refetch();
     },
     variables: { apartmentsId: props.apartmentId },
   });
+  // console.log('apartment:', data);
 
-  const [handleUpdateApartment] = useMutation(updateApartmentById, {
+  const [rentOnEdit, setRentOnEdit] = useState<number>();
+  const [occupiedOnEdit, setOccupiedOnEdit] = useState(
+    props.apartmentOccupation,
+  );
+  const [isEditingOccupancy, setIsEditingOccupancy] = useState(false);
+  const [isEditingRent, setIsEditingRent] = useState(false);
+  const [commentOnEdit, setCommentOnEdit] = useState('');
+  const [statusOnEdit, setStatusOnEdit] = useState(false);
+  const [isEditingComment, setIsEditingComment] = useState(false);
+  const [isEditingStatus, setIsEditingStatus] = useState(false);
+
+  const router = useRouter();
+
+  const requestId = data?.apartments.tenant.requests[0].id;
+  // console.log('requestId:', requestId);
+
+  const [handleUpdateApartmentRent] = useMutation(updateApartmentRentById, {
     variables: {
       id: props.apartmentId,
       rentOnEdit,
-      occupiedOnEdit,
+    },
+
+    onCompleted: async () => {
+      await refetch();
+    },
+  });
+  const [handleUpdateApartmentOccupancy] = useMutation(
+    updateApartmentOccupancyById,
+    {
+      variables: {
+        id: props.apartmentId,
+        occupiedOnEdit,
+      },
+
+      onCompleted: async () => {
+        await refetch();
+      },
+    },
+  );
+
+  const [handleUpdateRequestComment] = useMutation(updateRequestCommentById, {
+    variables: {
+      id: requestId,
+      commentOnEdit,
+    },
+
+    onCompleted: async () => {
+      await refetch();
+    },
+  });
+
+  const [handleUpdateRequestStatus] = useMutation(updateRequestStatusById, {
+    variables: {
+      id: requestId,
+      statusOnEdit,
     },
 
     onCompleted: async () => {
@@ -145,7 +214,7 @@ export default function ApartmentsPage(props: {
               <tr className="px-6 py-4">
                 <td className="px-6 py-4">Rent:</td>
                 <td className="flex items-center space-x-10">
-                  {!isEditing ? (
+                  {!isEditingRent ? (
                     <span className="flex-grow py-4">{newRent} ₱</span>
                   ) : (
                     <input
@@ -155,11 +224,11 @@ export default function ApartmentsPage(props: {
                       }}
                     />
                   )}
-                  {!isEditing ? (
+                  {!isEditingRent ? (
                     <button
                       className="flex-none"
                       onClick={() => {
-                        setIsEditing(true);
+                        setIsEditingRent(true);
                         setRentOnEdit(data.apartments.rent);
                       }}
                     >
@@ -169,8 +238,8 @@ export default function ApartmentsPage(props: {
                     <button
                       className="flex-none"
                       onClick={async () => {
-                        setIsEditing(false);
-                        await handleUpdateApartment();
+                        setIsEditingRent(false);
+                        await handleUpdateApartmentRent();
                       }}
                     >
                       <CheckIcon className="w-5 h-5 text-primary" />
@@ -182,26 +251,27 @@ export default function ApartmentsPage(props: {
               <tr className="px-6 py-4">
                 <td className="px-6 py-4">Occupation:</td>
                 <td className="flex items-center space-x-10">
-                  {!isEditing ? (
+                  {!isEditingOccupancy ? (
                     data.apartments.occupied ? (
                       <span className="flex-grow py-4">Occupied</span>
                     ) : (
-                      <span>Available</span>
+                      <span className="flex-grow py-4">Available</span>
                     )
                   ) : (
                     <input
                       type="checkbox"
+                      className="px-6"
                       checked={occupiedOnEdit}
                       onChange={(event) => {
                         setOccupiedOnEdit(event.currentTarget.checked);
                       }}
                     />
                   )}
-                  {!isEditing ? (
+                  {!isEditingOccupancy ? (
                     <button
                       className="flex-none"
                       onClick={() => {
-                        setIsEditing(true);
+                        setIsEditingOccupancy(true);
                         setOccupiedOnEdit(data.apartments.occupied);
                       }}
                     >
@@ -211,8 +281,8 @@ export default function ApartmentsPage(props: {
                     <button
                       className="flex-none"
                       onClick={async () => {
-                        setIsEditing(false);
-                        await handleUpdateApartment();
+                        setIsEditingOccupancy(false);
+                        await handleUpdateApartmentOccupancy();
                       }}
                     >
                       <CheckIcon className="w-5 h-5 text-primary" />
@@ -262,53 +332,127 @@ export default function ApartmentsPage(props: {
           </button>
         )}
       </div>
-      {/* ----- DATA VISUALIZATION ----- */}
-      {data.apartments.tenant ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 mt-5 mx-8">
-          <div className="col-span-1 md:col-span-2">
-            <StackedBarChart />
-          </div>
-          <PieChart />
-          <div>
-            {/* ----- REQUEST TABLE ----- */}
-            {data.apartments.tenant.requests.length > 0 ? (
-              <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
-                <tbody className="divide-y divide-gray-100 border-t border-gray-100">
-                  <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
-                    <th className="flex-1">Requests</th>
-                  </tr>
-                  {data.apartments.tenant.requests.map((request: Request) => {
-                    const createdAt = parseInt(request.createdAt);
-                    const newDate = new Date(createdAt);
-                    const dateString = `${newDate.getDate()}.${
-                      newDate.getMonth() + 1
-                    }.${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()}`;
-                    return (
-                      <div key={`request-${request.id}`}>
-                        <tr className="px-6 py-4">
-                          <td className="px-6 py-4">Created: {dateString}</td>
-                        </tr>
-                        <tr>
-                          <td className="px-6 py-4">{request.message}</td>
-                        </tr>
-                      </div>
-                    );
-                  })}
-                </tbody>
-              </table>
-            ) : (
-              <div>No requests for you</div>
-            )}
-          </div>
+      {/* ----- DATA VISUALIZATION + REQUESTS ----- */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-5 mx-8 justify-center">
+        <div className="col-span-1 md:col-span-2">
+          <StackedBarChart />
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 mt-5 mx-8">
-          <div className="col-span-1 md:col-span-2">
-            <StackedBarChart />
-          </div>
+        <div className="col-span-1">
           <PieChart />
         </div>
-      )}
+        <div className="col-span-2">
+          <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+            <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+              <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
+                <th className="flex-1">Requests</th>
+              </tr>
+              {data.apartments.tenant.requests.map((request: Request) => {
+                const createdAt = parseInt(request.createdAt);
+                const newDate = new Date(createdAt);
+                const dateString = `${newDate.getDate()}.${
+                  newDate.getMonth() + 1
+                }.${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()}`;
+
+                return (
+                  <div key={`request-${request.id}`}>
+                    <tr className="px-6 py-2 flex flex-row">
+                      <td className="basis-1/2">Created: {dateString}</td>
+                      <td className="basis-1/2 flex justify-center items-center space-x-10 pl-16">
+                        {/* ----- UPDATE STATUS ----- */}
+                        {!isEditingStatus ? (
+                          request.status ? (
+                            <span className="badge badge-success badge-sm">
+                              Closed
+                            </span>
+                          ) : (
+                            <span className=" badge badge-error badge-sm">
+                              In Progress
+                            </span>
+                          )
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="px-6"
+                            checked={statusOnEdit}
+                            onChange={(event) => {
+                              setStatusOnEdit(event.currentTarget.checked);
+                            }}
+                          />
+                        )}
+                        {!isEditingStatus ? (
+                          <button
+                            className="flex-none"
+                            onClick={() => {
+                              setIsEditingStatus(true);
+                              setStatusOnEdit(
+                                data.apartments.tenant.requests.status,
+                              );
+                            }}
+                          >
+                            <PencilSquareIcon className="w-5 h-5 text-primary" />
+                          </button>
+                        ) : (
+                          <button
+                            className="flex-none"
+                            onClick={async () => {
+                              setIsEditingStatus(false);
+                              await handleUpdateRequestStatus();
+                            }}
+                          >
+                            <CheckIcon className="w-5 h-5 text-primary" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-6 py-1">You: {request.message}</td>
+                    </tr>
+                    {/* ----- UPDATE COMMENT ----- */}
+
+                    <tr className="px-6 py-1 flex flex-row justify-between ">
+                      <td className="flex justify-center items-center space-x-10">
+                        {!isEditingComment ? (
+                          <span className="">{request.comment}</span>
+                        ) : (
+                          <input
+                            value={commentOnEdit}
+                            onChange={(event) => {
+                              setCommentOnEdit(event.currentTarget.value);
+                            }}
+                          />
+                        )}
+                        {!isEditingComment ? (
+                          <button
+                            className="flex-none btn btn-xs btn-success"
+                            onClick={() => {
+                              setIsEditingComment(true);
+                              setCommentOnEdit(
+                                data.apartments.tenant.requests.comment,
+                              );
+                            }}
+                          >
+                            Comment
+                          </button>
+                        ) : (
+                          <button
+                            className="flex-none"
+                            onClick={async () => {
+                              setIsEditingComment(false);
+                              await handleUpdateRequestComment();
+                            }}
+                          >
+                            <CheckIcon className="w-5 h-5 text-primary" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  </div>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </>
   );
 }

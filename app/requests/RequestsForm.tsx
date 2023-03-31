@@ -54,6 +54,7 @@ export default function RequestsForm(props: {
       setOnError(error.message);
     },
     onCompleted: () => {
+      router.replace(`/tenantProfile/${props.userId}`);
       router.refresh();
     },
   });
@@ -91,7 +92,7 @@ export default function RequestsForm(props: {
           <label className="input-group input-group-md">
             <span className="w-28">Picture</span>
             <input
-              placeholder="Upload Avatar here"
+              placeholder="Upload Picture here"
               className="input input-bordered input-md"
               value={picture}
               onChange={(event) => {

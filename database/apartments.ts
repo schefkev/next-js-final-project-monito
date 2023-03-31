@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { sql } from './connect';
 
 export type Apartment = {
+  status: any;
   id: number;
   tenantId: number;
   name: string;
@@ -17,6 +18,7 @@ export type Apartment = {
     username: string;
     avatar: string;
     requests: {
+      filter(arg0: (request: any) => any): unknown;
       length: number;
       id: number;
       message: string;
@@ -67,7 +69,7 @@ export const createApartment = cache(
     const [apartment] = await sql<
       {
         id: number;
-        tenantId: number;
+        userId: number;
         name: string;
         address: string;
         city: string;
@@ -143,9 +145,9 @@ export const updateApartmentWithTenantId = cache(
   },
 );
 
-/* ----- UPDATE THE APARTMENT WITH ITS ID ----- */
-export const updateApartmentById = cache(
-  async (id: number, rent: number, occupied: boolean) => {
+/* ----- UPDATE THE APARTMENT RENT WITH ITS ID ----- */
+export const updateApartmentRentById = cache(
+  async (id: number, rent: number) => {
     if (Number.isNaN(id)) {
       return undefined;
     }
@@ -154,7 +156,26 @@ export const updateApartmentById = cache(
   UPDATE
     apartments
   SET
-    rent = ${rent},
+    rent = ${rent}
+  WHERE
+    id = ${id}
+  RETURNING *
+  `;
+    return apartment;
+  },
+);
+
+/* ----- UPDATE THE APARTMENT OCCUPANCY WITH ITS ID ----- */
+export const updateApartmentOccupancyById = cache(
+  async (id: number, occupied: boolean) => {
+    if (Number.isNaN(id)) {
+      return undefined;
+    }
+
+    const [apartment] = await sql<Apartment[]>`
+  UPDATE
+    apartments
+  SET
     occupied = ${occupied}
   WHERE
     id = ${id}

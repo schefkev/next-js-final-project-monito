@@ -3,6 +3,7 @@
 import { gql, useMutation } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Logo from '../../../../../public/logo1.svg';
 
@@ -52,6 +53,7 @@ export default function StatisticsForm(props: {
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [onError, setOnError] = useState('');
+  const router = useRouter();
 
   const [handleCreateStats] = useMutation(createStatistic, {
     variables: {
@@ -66,6 +68,10 @@ export default function StatisticsForm(props: {
     onError: (error) => {
       setOnError(error.message);
     },
+    onCompleted: () => {
+      router.replace(`/apartments/${props.apartmentId}`);
+      router.refresh();
+    },
   });
 
   return (
@@ -78,7 +84,9 @@ export default function StatisticsForm(props: {
           </Link>
         </div>
         <div className="flex-none text-info">
-          <Link href={`/profile/${props.userId}`}>Return to Profile</Link>
+          <Link href={`/apartments/${props.apartmentId}`}>
+            Return to Profile
+          </Link>
         </div>
       </header>
       <div className="flex flex-col gap-2 justify-center items-center h-screen">

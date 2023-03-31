@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { initializeApollo } from '../../utils/graphql';
 import ApolloClientProvider from '../ApolloClientProvider';
 import RequestsForm from './RequestsForm';
@@ -42,8 +43,10 @@ export default async function RequestsPage() {
       tenantId: data.getLoggedInTenant.id,
     },
   });
-  console.log('Request Page:', data);
-  console.log('Request Page AptID:', tenantData);
+
+  /*  if (data.getLoggedInTenant) {
+    redirect(`/tenantProfile/${data.getLoggedInTenant.id}`);
+  } */
 
   return (
     <ApolloClientProvider
