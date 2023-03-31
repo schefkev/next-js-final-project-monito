@@ -102,7 +102,10 @@ export default function ApartmentsPage(props: {
 
   const router = useRouter();
 
-  const requestId = data?.apartments.tenant.requests[0].id;
+  const requestId =
+    data?.apartments.tenant.requests.length > 0
+      ? data.apartments.tenant.requests[0].id
+      : null;
   // console.log('requestId:', requestId);
 
   const [handleUpdateApartmentRent] = useMutation(updateApartmentRentById, {
