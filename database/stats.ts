@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { sql } from './connect';
 
 export type Stats = {
+  data: any;
   id: number;
   userId: number;
   apartmentId: number;
@@ -16,6 +17,19 @@ export type Stats = {
 export const getStats = cache(async () => {
   const stats = await sql<Stats[]>`
     SELECT * FROM stats
+  `;
+  return stats;
+});
+
+/* ----- GET THE STATS WITH THE APARTMENT ID ----- */
+export const getStatsById = cache(async (apartmentId: number) => {
+  const stats = await sql<Stats[]>`
+  SELECT
+    *
+  FROM
+    stats
+  WHERE
+    apartment_id = ${apartmentId}
   `;
   return stats;
 });

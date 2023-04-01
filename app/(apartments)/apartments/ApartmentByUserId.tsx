@@ -4,7 +4,6 @@ import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Apartment } from '../../../database/apartments';
-import { Request } from '../../../database/requests';
 
 const getApartmentByUserId = gql`
   query Query($userId: String) {
@@ -36,8 +35,6 @@ export default function ApartmentsPage(props: { userId: number }) {
   });
 
   if (loading) return <p>Loading...</p>;
-  console.log('apartment-site:', data);
-  // console.log('user:', props.userId);
 
   return (
     <div className="">
@@ -64,7 +61,7 @@ export default function ApartmentsPage(props: { userId: number }) {
                     alt="Apartment Name"
                     width="300"
                     height="300"
-                    className="object-cover md:object-scale-down"
+                    className="object-fit md:object-scale-down"
                   />
                   <div className="card-body">
                     <Link href={`apartments/${apartment.id}`}>
@@ -77,10 +74,10 @@ export default function ApartmentsPage(props: { userId: number }) {
                         <>
                           <p>This apartment is currently occupied</p>
 
-                          <Link href={`tenants/${apartment.tenant.id}`}>
+                          <Link href={`apartments/${apartment.id}`}>
                             <div className="flex items-center mt-12">
                               <Image
-                                className="w-12 h-12 rounded-full mr-4"
+                                className="w-12 h-12 rounded-full mr-4 object-fit"
                                 src={apartment.tenant.avatar}
                                 alt={`Avatar of ${apartment.tenant.username}`}
                                 width={100}

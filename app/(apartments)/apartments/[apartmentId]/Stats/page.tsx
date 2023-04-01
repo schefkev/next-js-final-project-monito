@@ -49,9 +49,6 @@ export default async function StatisticsPage(props: Props) {
     },
   });
 
-  console.log('User:', userData);
-  console.log('Apartment:', aptData);
-
   return (
     <ApolloClientProvider initialApolloState={JSON.stringify([])}>
       <StatisticsForm

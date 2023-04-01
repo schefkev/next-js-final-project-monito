@@ -22,7 +22,7 @@ import {
   updateRequestStatus,
 } from '../../database/requests';
 import { createSession, deleteSessionByToken } from '../../database/sessions';
-import { createStats } from '../../database/stats';
+import { createStats, getStatsById } from '../../database/stats';
 import {
   createTenant,
   getTenantBySessionToken,
@@ -56,6 +56,9 @@ type ArgsId = {
 };
 type ArgsTenantId = {
   tenantId: string;
+};
+type StatsId = {
+  apartmentId: string;
 };
 type ArgsApartmentId = {
   apartmentId: string;
@@ -233,7 +236,7 @@ const typeDefs = gql`
     """
     Stats Section
     """
-    stats: [Stats]
+    stats(apartmentId: String): [Stats]
   }
 
   type Mutation {
@@ -328,6 +331,9 @@ const resolvers = {
     requestByTenantId: async (parent: string, args: ArgsTenantId) => {
       return await getRequestByTenantId(parseInt(args.tenantId));
     },
+    stats: async (parent: string, args: StatsId) => {
+      return await getStatsById(parseInt(args.apartmentId));
+    },
   },
   // New Entry Point -- This is where the JOIN is happening
   Apartment: {
@@ -346,9 +352,6 @@ const resolvers = {
         };
       }
       return null;
-      // const tenant = await getTenantsById(parseInt(parent.tenantId));
-      // return tenant;
-      // console.log('Apartment:', tenant);
     },
     requests: async (parent: any) => {
       const request = await getRequestByTenantId(parent.tenantId);

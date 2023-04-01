@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 'use client';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { CheckIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
@@ -5,10 +6,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import PieChart from '../../../../components/DoughnutChart';
-import StackedBarChart from '../../../../components/StackBarChart';
 import { Request } from '../../../../database/requests';
 import Logo from '../../../../public/logo1.svg';
+import StackedBarChart from './Chart';
 
 const updateApartmentRentById = gql`
   mutation updateApartmentRentById($id: ID!, $rentOnEdit: Int) {
@@ -49,6 +49,7 @@ const updateRequestStatusById = gql`
 const getApartmentById = gql`
   query Query($apartmentsId: ID!) {
     apartments(id: $apartmentsId) {
+      id
       name
       userId
       address
@@ -77,6 +78,18 @@ const getApartmentById = gql`
   }
 `;
 
+/* const getStats = gql`
+  query Query($apartmentId: String) {
+    stats(apartmentId: $apartmentId) {
+      rent
+      mortgage
+      expense
+      month
+      year
+    }
+  }
+`; */
+
 export default function ApartmentsPage(props: {
   apartmentId: number;
   apartmentOccupation: boolean;
@@ -87,7 +100,14 @@ export default function ApartmentsPage(props: {
     },
     variables: { apartmentsId: props.apartmentId },
   });
-  // console.log('apartment:', data);
+
+  /*   const { data: stats } = useQuery(getStats, {
+    onCompleted: async () => {
+      await refetch();
+    },
+    variables: { apartmentId: props.apartmentId },
+  });
+  console.log('stats', stats); */
 
   const [rentOnEdit, setRentOnEdit] = useState<number>();
   const [occupiedOnEdit, setOccupiedOnEdit] = useState(
@@ -103,10 +123,15 @@ export default function ApartmentsPage(props: {
   const router = useRouter();
 
   const requestId =
-    data?.apartments.tenant.requests.length > 0
+    data?.apartments?.tenant?.requests?.length > 0 ??
+    data?.apartments.tenant !== null
       ? data.apartments.tenant.requests[0].id
       : null;
-  // console.log('requestId:', requestId);
+
+  const firstName = data?.apartments?.tenant?.username.charAt(0) ?? '';
+  const lastName =
+    data?.apartments?.tenant?.username.split(' ')[1].charAt(0) ?? '';
+  const name = firstName + lastName;
 
   const [handleUpdateApartmentRent] = useMutation(updateApartmentRentById, {
     variables: {
@@ -337,11 +362,8 @@ export default function ApartmentsPage(props: {
       </div>
       {/* ----- DATA VISUALIZATION + REQUESTS ----- */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-5 mx-8 justify-center">
-        <div className="col-span-1 md:col-span-2">
-          <StackedBarChart />
-        </div>
-        <div className="col-span-1">
-          <PieChart />
+        <div className="col-span-1 md:col-span-3">
+          <StackedBarChart apartmentId={data.apartments.id} />
         </div>
         <div className="col-span-2">
           <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
@@ -349,109 +371,127 @@ export default function ApartmentsPage(props: {
               <tr className="flex gap-3 px-6 py-4 font-normal text-primary text-xl">
                 <th className="flex-1">Requests</th>
               </tr>
-              {data.apartments.tenant.requests.map((request: Request) => {
-                const createdAt = parseInt(request.createdAt);
-                const newDate = new Date(createdAt);
-                const dateString = `${newDate.getDate()}.${
-                  newDate.getMonth() + 1
-                }.${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()}`;
+              {data?.apartments?.tenant?.requests?.length > 0 ??
+              data?.apartments?.tenant !== null ? (
+                data.apartments.tenant.requests.map((request: Request) => {
+                  const createdAt = parseInt(request.createdAt);
+                  const newDate = new Date(createdAt);
+                  const dateString = `${newDate.getDate()}.${
+                    newDate.getMonth() + 1
+                  }.${newDate.getFullYear()} ${newDate.getHours()}:${newDate.getMinutes()}`;
 
-                return (
-                  <div key={`request-${request.id}`}>
-                    <tr className="px-6 py-2 flex flex-row">
-                      <td className="basis-1/2">Created: {dateString}</td>
-                      <td className="basis-1/2 flex justify-center items-center space-x-10 pl-16">
-                        {/* ----- UPDATE STATUS ----- */}
-                        {!isEditingStatus ? (
-                          request.status ? (
-                            <span className="badge badge-success badge-sm">
-                              Closed
-                            </span>
+                  return (
+                    <div key={`request-${request.id}`}>
+                      <tr className="px-6 py-2 flex flex-row">
+                        <td className="basis-1/2">Created: {dateString}</td>
+                        <td className="basis-1/2 flex justify-center items-center space-x-10 pl-16">
+                          {/* ----- UPDATE STATUS ----- */}
+                          {!isEditingStatus ? (
+                            request.status ? (
+                              <span className="badge badge-success badge-sm">
+                                Closed
+                              </span>
+                            ) : (
+                              <span className=" badge badge-error badge-sm">
+                                In Progress
+                              </span>
+                            )
                           ) : (
-                            <span className=" badge badge-error badge-sm">
-                              In Progress
-                            </span>
-                          )
-                        ) : (
-                          <input
-                            type="checkbox"
-                            className="px-6"
-                            checked={statusOnEdit}
-                            onChange={(event) => {
-                              setStatusOnEdit(event.currentTarget.checked);
-                            }}
-                          />
-                        )}
-                        {!isEditingStatus ? (
-                          <button
-                            className="flex-none"
-                            onClick={() => {
-                              setIsEditingStatus(true);
-                              setStatusOnEdit(
-                                data.apartments.tenant.requests.status,
-                              );
-                            }}
-                          >
-                            <PencilSquareIcon className="w-5 h-5 text-primary" />
-                          </button>
-                        ) : (
-                          <button
-                            className="flex-none"
-                            onClick={async () => {
-                              setIsEditingStatus(false);
-                              await handleUpdateRequestStatus();
-                            }}
-                          >
-                            <CheckIcon className="w-5 h-5 text-primary" />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-1">You: {request.message}</td>
-                    </tr>
-                    {/* ----- UPDATE COMMENT ----- */}
+                            <input
+                              type="checkbox"
+                              className="px-6"
+                              checked={statusOnEdit}
+                              onChange={(event) => {
+                                setStatusOnEdit(event.currentTarget.checked);
+                              }}
+                            />
+                          )}
+                          {!isEditingStatus ? (
+                            <button
+                              className="flex-none"
+                              onClick={() => {
+                                setIsEditingStatus(true);
+                                setStatusOnEdit(
+                                  data.apartments.tenant.requests.status,
+                                );
+                              }}
+                            >
+                              <PencilSquareIcon className="w-5 h-5 text-primary" />
+                            </button>
+                          ) : (
+                            <button
+                              className="flex-none"
+                              onClick={async () => {
+                                setIsEditingStatus(false);
+                                await handleUpdateRequestStatus();
+                              }}
+                            >
+                              <CheckIcon className="w-5 h-5 text-primary" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="px-6 py-1">
+                          {name}: {request.message}
+                        </td>
+                      </tr>
+                      {/* ----- UPDATE COMMENT ----- */}
 
-                    <tr className="px-6 py-1 flex flex-row justify-between ">
-                      <td className="flex justify-center items-center space-x-10">
-                        {!isEditingComment ? (
-                          <span className="">{request.comment}</span>
-                        ) : (
-                          <input
-                            value={commentOnEdit}
-                            onChange={(event) => {
-                              setCommentOnEdit(event.currentTarget.value);
-                            }}
-                          />
-                        )}
-                        {!isEditingComment ? (
-                          <button
-                            className="flex-none btn btn-xs btn-success"
-                            onClick={() => {
-                              setIsEditingComment(true);
-                              setCommentOnEdit(
-                                data.apartments.tenant.requests.comment,
-                              );
-                            }}
-                          >
-                            Comment
-                          </button>
-                        ) : (
-                          <button
-                            className="flex-none"
-                            onClick={async () => {
-                              setIsEditingComment(false);
-                              await handleUpdateRequestComment();
-                            }}
-                          >
-                            <CheckIcon className="w-5 h-5 text-primary" />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  </div>
-                );
-              })}
+                      <tr className="px-6 py-1 flex flex-row justify-between ">
+                        <td className="flex justify-center items-center space-x-10">
+                          {request.comment ? (
+                            !isEditingComment ? (
+                              <span className="">You: {request.comment}</span>
+                            ) : (
+                              <input
+                                value={commentOnEdit}
+                                onChange={(event) => {
+                                  setCommentOnEdit(event.currentTarget.value);
+                                }}
+                              />
+                            )
+                          ) : !isEditingComment ? (
+                            <span className="">Add a comment</span>
+                          ) : (
+                            <input
+                              value={commentOnEdit}
+                              onChange={(event) => {
+                                setCommentOnEdit(event.currentTarget.value);
+                              }}
+                            />
+                          )}
+                          {!isEditingComment ? (
+                            <button
+                              className="flex-none btn btn-xs btn-success"
+                              onClick={() => {
+                                setIsEditingComment(true);
+                                setCommentOnEdit(
+                                  data.apartments.tenant.requests.comment,
+                                );
+                              }}
+                            >
+                              Comment
+                            </button>
+                          ) : (
+                            <button
+                              className="flex-none"
+                              onClick={async () => {
+                                setIsEditingComment(false);
+                                await handleUpdateRequestComment();
+                              }}
+                            >
+                              <CheckIcon className="w-5 h-5 text-primary" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    </div>
+                  );
+                })
+              ) : (
+                <div>No Requests Found</div>
+              )}
             </tbody>
           </table>
         </div>
