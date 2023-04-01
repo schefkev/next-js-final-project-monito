@@ -96,6 +96,7 @@ export default function TenantForm(props: {
           <label className="input-group input-group-md">
             <span className="w-28">Password</span>
             <input
+              type="password"
               placeholder="Password here"
               className="input input-bordered input-md"
               value={password}

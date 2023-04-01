@@ -388,7 +388,7 @@ export default function ApartmentsPage(props: {
                           {/* ----- UPDATE STATUS ----- */}
                           {!isEditingStatus ? (
                             request.status ? (
-                              <span className="badge badge-success badge-sm">
+                              <span className="badge badge-warning badge-sm">
                                 Closed
                               </span>
                             ) : (

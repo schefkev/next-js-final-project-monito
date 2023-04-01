@@ -74,7 +74,7 @@ export default async function HomePage() {
           <p className="text-xl text-info tracking-wide mt-12">
             The Ultimate property management solution
           </p>
-          <hr className="w-36 h-1 bg-error rounded mt-6" />
+          <hr className="w-36 h-1 bg-accent rounded mt-6" />
           <div className="flex flex-col my-12">
             <div className="grid h-20 card rounded-box placed-items-center max-w-4xl text-l tracking-wide text-info">
               Our app is designed to simplify the way landlords communicate with

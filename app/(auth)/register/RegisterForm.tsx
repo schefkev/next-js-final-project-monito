@@ -84,6 +84,7 @@ export default function RegistrationForm(props: {
           <label className="input-group input-group-md">
             <span className="w-28">Password</span>
             <input
+              type="password"
               placeholder="Please enter password"
               className="input input-bordered input-md"
               value={password}

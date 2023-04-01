@@ -1,5 +1,5 @@
 'use client';
 
 export default function LogoutButton() {
-  return <button className="btn btn-error btn-xs">Logout</button>;
+  return <button className="btn btn-accent btn-xs">Logout</button>;
 }

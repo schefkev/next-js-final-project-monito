@@ -266,13 +266,13 @@ export default function TenantApartmentsPage(props: { userId: number }) {
                       </td>
                     </tr>
                     <tr>
-                      <td className="px-6 py-4">You: {request.message}</td>
+                      <td className="px-6 py-2">You: {request.message}</td>
                     </tr>
                     <tr>
                       {request.comment ? (
-                        <span className="px-6 py-4">
+                        <td className="px-6 py-2">
                           Landlord: {request.comment}
-                        </span>
+                        </td>
                       ) : (
                         <span />
                       )}
