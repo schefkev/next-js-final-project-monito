@@ -39,15 +39,15 @@ You can also just watch a quick demo video of the app [here](https://www.dropbox
 
 **Monito's Landing Page where the user can check out which services are provided**
 <br>
-![landingPage](https://www.dropbox.com/s/5g5z45bcirzlcsq/Screenshot%202023-04-02%20at%2021.24.57.png?dl=0)
+![landingpage](public/images/landingpage.png)
 
 **Summary of all the assets a landlord has**
 <br>
-![apartments](https://www.dropbox.com/s/7q42mjav1dhy7hp/Screenshot%202023-04-02%20at%2021.26.37.png?dl=0)
+![summary](public/images/summary.png)
 
 **Landlord's Dashboard to have an Overview of a single apartment**
 <br>
-![dashboard](https://www.dropbox.com/s/gav7puvsg993l6s/Screenshot%202023-04-02%20at%2021.26.56.png?dl=0)
+![dashboard](public/images/dashboardapt.png)
 
 ### Setup Instructions
 
