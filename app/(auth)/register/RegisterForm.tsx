@@ -1,12 +1,17 @@
 'use client';
 
 import { gql, useMutation } from '@apollo/client';
+import { useFormik } from 'formik';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Logo from '../../../public/logo1.svg';
-import { getSafeReturnToPath } from '../../../utils/validation';
+import {
+  formValidation,
+  getSafeReturnToPath,
+  Values,
+} from '../../../utils/validation';
 
 export type UserResponse = {
   id: number;
@@ -28,18 +33,15 @@ const createUser = gql`
 export default function RegistrationForm(props: {
   returnTo?: string | string[];
 }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [avatar, setAvatar] = useState('');
   const [onError, setOnError] = useState('');
   const router = useRouter();
 
   const [handleCreateUser] = useMutation(createUser, {
-    variables: {
+    /* variables: {
       username,
       password,
       avatar,
-    },
+    }, */
     onError: (error) => {
       setOnError(error.message);
     },
@@ -54,6 +56,18 @@ export default function RegistrationForm(props: {
     },
   });
 
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+      avatar: '',
+    },
+    validate: formValidation,
+    onSubmit: async (values: Values) => {
+      await handleCreateUser({ variables: { ...values } });
+    },
+  });
+
   return (
     <div>
       {/* ----- HEADER ----- */}
@@ -65,57 +79,70 @@ export default function RegistrationForm(props: {
         </div>
       </header>
       {/* ----- CREATE USER NAME ----- */}
-      <div className="flex flex-col gap-4 justify-content items-center h-screen mt-16">
-        <div className="form-control">
-          <label className="input-group input-group-md">
-            <span className="w-28">Name</span>
-            <input
-              placeholder="Please enter username"
-              className="input input-bordered input-md"
-              value={username}
-              onChange={(event) => {
-                setUsername(event.currentTarget.value);
-              }}
-            />
-          </label>
+      <form onSubmit={formik.handleSubmit}>
+        <div className="flex flex-col gap-4 justify-content items-center h-screen mt-16">
+          <div className="form-control">
+            <label className="input-group input-group-md">
+              <span className="w-28">Name</span>
+              <input
+                placeholder="Please enter username"
+                name="username"
+                autoComplete="username"
+                className={`input input-bordered input-md ${
+                  formik.errors.username ? 'border-error' : ''
+                }`}
+                value={formik.values.username}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </label>
+            {formik.touched.username && formik.errors.username ? (
+              <div className="text-error text-xs mt-2 ml-4 whitespace-pre-line">
+                {formik.errors.username}
+              </div>
+            ) : null}
+          </div>
+          {/* ----- CREATE USER PASSWORD ----- */}
+          <div className="form-control">
+            <label className="input-group input-group-md">
+              <span className="w-28">Password</span>
+              <input
+                type="password"
+                placeholder="Please enter password"
+                name="password"
+                autoComplete="current-password"
+                className={`input input-bordered input-md ${
+                  formik.errors.password ? 'border-error' : ''
+                }`}
+                value={formik.values.password}
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+              />
+            </label>
+            {formik.touched.password && formik.errors.password ? (
+              <div className="whitespace-pre-line	text-error text-xs mt-2 ml-4">
+                {formik.errors.password}
+              </div>
+            ) : null}
+          </div>
+          {/* ----- CREATE USER AVATAR ----- */}
+          <div className="form-control">
+            <label className="input-group input-group-md">
+              <span className="w-28">Avatar</span>
+              <input
+                placeholder="Upload Avatar here"
+                name="avatar"
+                className="input input-bordered input-md"
+                value={formik.values.avatar}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </label>
+          </div>
+          <p>{onError}</p>
+          <button className="btn btn-primary">Sign Up</button>
         </div>
-        {/* ----- CREATE USER PASSWORD ----- */}
-        <div className="form-control">
-          <label className="input-group input-group-md">
-            <span className="w-28">Password</span>
-            <input
-              type="password"
-              placeholder="Please enter password"
-              className="input input-bordered input-md"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.currentTarget.value);
-              }}
-            />
-          </label>
-        </div>
-        {/* ----- CREATE USER AVATAR ----- */}
-        <div className="form-control">
-          <label className="input-group input-group-md">
-            <span className="w-28">Avatar</span>
-            <input
-              placeholder="Upload Avatar here"
-              className="input input-bordered input-md"
-              value={avatar}
-              onChange={(event) => {
-                setAvatar(event.currentTarget.value);
-              }}
-            />
-          </label>
-        </div>
-        <button
-          onClick={async () => await handleCreateUser()}
-          className="btn btn-primary"
-        >
-          Sign Up
-        </button>
-        <div className="error">{onError}</div>
-      </div>
+      </form>
     </div>
   );
 }

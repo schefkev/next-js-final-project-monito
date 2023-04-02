@@ -25,6 +25,7 @@
     "daisyui": "^2.51.1",
     "dotenv-cli": "^7.0.0",
     "dotenv-safe": "^8.2.0",
+    "formik": "^2.2.9",
     "graphql": "^16.6.0",
     "jest-environment-jsdom": "^29.5.0",
     "ley": "^0.8.1",
