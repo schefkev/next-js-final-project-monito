@@ -37,11 +37,6 @@ export default function RegistrationForm(props: {
   const router = useRouter();
 
   const [handleCreateUser] = useMutation(createUser, {
-    /* variables: {
-      username,
-      password,
-      avatar,
-    }, */
     onError: (error) => {
       setOnError(error.message);
     },

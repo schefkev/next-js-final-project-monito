@@ -20,17 +20,10 @@ const loginMutation = gql`
 `;
 
 export default function LoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [onError, setOnError] = useState('');
   const router = useRouter();
 
   const [loginHandler] = useMutation(loginMutation, {
-    /* variables: {
-      username,
-      password,
-    }, */
-
     onError: (error) => {
       setOnError(error.message);
     },
