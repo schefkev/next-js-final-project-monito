@@ -53,7 +53,8 @@ const getTenantWithApartment = gql`
 export default function TenantApartmentsPage(props: { userId: number }) {
   const [mailOnEdit, setMailOnEdit] = useState('');
   const [birthdayOnEdit, setBirthdayOnEdit] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+  const [isEditingMail, setIsEditingMail] = useState(false);
   const router = useRouter();
   const { loading, data, refetch } = useQuery(getTenantWithApartment, {
     onCompleted: async () => {
@@ -74,7 +75,6 @@ export default function TenantApartmentsPage(props: { userId: number }) {
   });
 
   if (loading) return <p>Loading...</p>;
-  console.log('user:', data);
   const rent = data.tenant.apartment.rent;
   const newRent = rent.toLocaleString('en-US');
 
@@ -147,7 +147,7 @@ export default function TenantApartmentsPage(props: { userId: number }) {
               <tr className="px-6 py-4">
                 <td className="px-6 py-4">Email:</td>
                 <td className="flex items-center space-x-10">
-                  {!isEditing ? (
+                  {!isEditingMail ? (
                     <span className="flex-grow py-4">
                       {data.tenant.mail ?? '-'}
                     </span>
@@ -160,11 +160,11 @@ export default function TenantApartmentsPage(props: { userId: number }) {
                       }}
                     />
                   )}
-                  {!isEditing ? (
+                  {!isEditingMail ? (
                     <button
                       className="flex-none py-4"
                       onClick={() => {
-                        setIsEditing(true);
+                        setIsEditingMail(true);
                         setMailOnEdit(data.tenant.mail);
                       }}
                     >
@@ -174,7 +174,7 @@ export default function TenantApartmentsPage(props: { userId: number }) {
                     <button
                       className="flex-none py-4"
                       onClick={async () => {
-                        setIsEditing(false);
+                        setIsEditingMail(false);
                         await handleUpdateTenant();
                       }}
                     >
@@ -187,7 +187,7 @@ export default function TenantApartmentsPage(props: { userId: number }) {
               <tr className="px-6 py-4">
                 <td className="px-6 py-4">Birthdate:</td>
                 <td className="flex items-center space-x-10">
-                  {!isEditing ? (
+                  {!isEditingDate ? (
                     <span className="flex-grow py-4">
                       {data.tenant.birthday ?? '-'}
                     </span>
@@ -200,11 +200,11 @@ export default function TenantApartmentsPage(props: { userId: number }) {
                       }}
                     />
                   )}
-                  {!isEditing ? (
+                  {!isEditingDate ? (
                     <button
                       className="flex-none items-center py-4"
                       onClick={() => {
-                        setIsEditing(true);
+                        setIsEditingDate(true);
                         setBirthdayOnEdit(data.tenant.birthday);
                       }}
                     >
@@ -214,7 +214,7 @@ export default function TenantApartmentsPage(props: { userId: number }) {
                     <button
                       className="flex-none items-center py-4"
                       onClick={async () => {
-                        setIsEditing(false);
+                        setIsEditingDate(false);
                         await handleUpdateTenant();
                       }}
                     >

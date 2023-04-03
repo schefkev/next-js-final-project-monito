@@ -78,18 +78,6 @@ const getApartmentById = gql`
   }
 `;
 
-/* const getStats = gql`
-  query Query($apartmentId: String) {
-    stats(apartmentId: $apartmentId) {
-      rent
-      mortgage
-      expense
-      month
-      year
-    }
-  }
-`; */
-
 export default function ApartmentsPage(props: {
   apartmentId: number;
   apartmentOccupation: boolean;
@@ -100,14 +88,6 @@ export default function ApartmentsPage(props: {
     },
     variables: { apartmentsId: props.apartmentId },
   });
-
-  /*   const { data: stats } = useQuery(getStats, {
-    onCompleted: async () => {
-      await refetch();
-    },
-    variables: { apartmentId: props.apartmentId },
-  });
-  console.log('stats', stats); */
 
   const [rentOnEdit, setRentOnEdit] = useState<number>();
   const [occupiedOnEdit, setOccupiedOnEdit] = useState(

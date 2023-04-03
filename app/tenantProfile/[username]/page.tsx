@@ -44,7 +44,7 @@ export default async function UserProfile({ params }: Props) {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error...</p>;
   if (!data.tenant) return <p>User not Found</p>;
-  // console.log('tenant:', data.tenant);
+
   return (
     <ApolloClientProvider
       initialApolloState={JSON.stringify(client.cache.extract())}
