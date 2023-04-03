@@ -185,6 +185,38 @@ export const updateTenantById = cache(
   },
 );
 
+/* ----- UPDATE THE TENANTS EMAIL WITH ITS ID ----- */
+export const updateTenantsEmailById = cache(
+  async (id: number, mail: string) => {
+    const [email] = await sql<Tenant[]>`
+  UPDATE
+    tenants
+  SET
+    mail = ${mail}
+  WHERE
+    id = ${id}
+  RETURNING *
+  `;
+    return email;
+  },
+);
+
+/* ----- UPDATE THE TENANTS BIRTHDAY WITH ITS ID ----- */
+export const updateTenantsBirthdayById = cache(
+  async (id: number, birthday: string) => {
+    const [tenant] = await sql<Tenant[]>`
+  UPDATE
+    tenants
+  SET
+    birthday = ${birthday}
+  WHERE
+    id = ${id}
+  RETURNING *
+  `;
+    return tenant;
+  },
+);
+
 /* ----- DELETE TENANT WITH ITS ID ----- */
 export const deleteTenantById = cache(async (id: number) => {
   if (Number.isNaN(id)) {

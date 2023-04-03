@@ -32,7 +32,8 @@ import {
   getTenantsById,
   getTenantsByUsername,
   getTenantWithApartmentId,
-  updateTenantById,
+  updateTenantsBirthdayById,
+  updateTenantsEmailById,
 } from '../../database/tenants';
 import {
   createTenantSession,
@@ -73,7 +74,7 @@ type UserInput = {
   avatar: string;
 };
 type TenantInput = {
-  id: string;
+  id: number;
   username: string;
   password: string;
   userId: number;
@@ -279,11 +280,22 @@ const typeDefs = gql`
     ): Stats
     logout(token: String!): Token
     tenantLogout(token: String!): Token
+    """
+    Tenants Section:
+    """
     updateApartmentRentById(id: ID!, rent: Int): Apartment
     updateApartmentOccupancyById(id: ID!, occupied: Boolean): Apartment
+    """
+    Tenants Section:
+    """
     updateTenantById(id: ID!, mail: String, birthday: String): Tenant
     updateRequestCommentById(id: ID!, comment: String): Request
     updateRequestStatusById(id: ID!, status: Boolean): Request
+    """
+    Tenants Section:
+    """
+    updateTenantsEmailById(id: ID!, mail: String): Tenant
+    updateTenantsBirthdayById(id: ID!, birthday: String): Tenant
   }
 `;
 
@@ -631,20 +643,17 @@ const resolvers = {
       }
       return await updateApartmentOccupancyById(args.id, args.occupied);
     },
-    updateTenantById: async (parent: any, args: TenantInput) => {
-      if (
-        !args.mail ||
-        !args.birthday ||
-        typeof args.mail !== 'string' ||
-        typeof args.birthday !== 'string'
-      ) {
+    updateTenantsEmailById: async (parent: any, args: TenantInput) => {
+      if (!args.mail || typeof args.mail !== 'string') {
         throw new GraphQLError('Required field missing');
       }
-      return await updateTenantById(
-        parseInt(args.id),
-        args.mail,
-        args.birthday,
-      );
+      return await updateTenantsEmailById(args.id, args.mail);
+    },
+    updateTenantsBirthdayById: async (parent: any, args: TenantInput) => {
+      if (!args.birthday || typeof args.birthday !== 'string') {
+        throw new GraphQLError('Required field is missing');
+      }
+      return await updateTenantsBirthdayById(args.id, args.birthday);
     },
     updateRequestCommentById: async (parent: any, args: RequestInput) => {
       if (!args.comment || typeof args.comment !== 'string') {

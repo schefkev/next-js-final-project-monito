@@ -21,6 +21,25 @@ const updateTenantById = gql`
     }
   }
 `;
+
+const updateTenantsEmailById = gql`
+  mutation updateTenantsEmailById($id: ID!, $mailOnEdit: String) {
+    updateTenantsEmailById(id: $id, mail: $mailOnEdit) {
+      id
+      mail
+    }
+  }
+`;
+
+const updateTenantsBirthdayById = gql`
+  mutation updateTenantsBirthdayById($id: ID!, $birthdayOnEdit: String) {
+    updateTenantsBirthdayById(id: $id, birthday: $birthdayOnEdit) {
+      id
+      birthday
+    }
+  }
+`;
+
 const getTenantWithApartment = gql`
   query Query($tenantId: ID!) {
     tenant(id: $tenantId) {
@@ -67,6 +86,26 @@ export default function TenantApartmentsPage(props: { userId: number }) {
     variables: {
       id: props.userId,
       mailOnEdit,
+      birthdayOnEdit,
+    },
+    onCompleted: async () => {
+      await refetch();
+    },
+  });
+
+  const [handleUpdateTenantMail] = useMutation(updateTenantsEmailById, {
+    variables: {
+      id: props.userId,
+      mailOnEdit,
+    },
+    onCompleted: async () => {
+      await refetch();
+    },
+  });
+
+  const [handleUpdateTenantBirthday] = useMutation(updateTenantsBirthdayById, {
+    variables: {
+      id: props.userId,
       birthdayOnEdit,
     },
     onCompleted: async () => {
@@ -175,7 +214,7 @@ export default function TenantApartmentsPage(props: { userId: number }) {
                       className="flex-none py-4"
                       onClick={async () => {
                         setIsEditingMail(false);
-                        await handleUpdateTenant();
+                        await handleUpdateTenantMail();
                       }}
                     >
                       <CheckIcon className="w-5 h-5 text-primary" />
@@ -215,7 +254,7 @@ export default function TenantApartmentsPage(props: { userId: number }) {
                       className="flex-none items-center py-4"
                       onClick={async () => {
                         setIsEditingDate(false);
-                        await handleUpdateTenant();
+                        await handleUpdateTenantBirthday();
                       }}
                     >
                       <CheckIcon className="w-5 h-5 text-primary" />
